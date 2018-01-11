@@ -1,0 +1,88 @@
+﻿@{Layout = "~/Views/Shared/_LayoutPublic.cshtml";}
+@section style {
+    <style>
+        .step {
+
+        }
+        .logo {
+            max-height:65px;
+        }
+    </style>
+}
+<div class="col-sm-7">
+    <h2><img class="logo" src="~/Images/header-logo.svg" />Amazon Walkthrough</h2>
+</div>
+<div class="col-sm-5 pull-right;" style="text-align:right;">
+    
+</div>
+<div class="col-md-12">
+    <span class="small">A walkthrough for setting up Amazon storage for the RingClone app.</span>
+</div>
+<div class="col-md-12 step step-1">
+    <h3>Step 1</h3>
+    <div>Leave RingClone open in a browswer window, switch to a new browser window, and log into your Amazon portal in that new window. After logging into your Amazon portal, click on the <strong>Services</strong> menu. Then, in the <strong>Services</strong> menu, click on the <strong>IAM</strong> link, located within the <strong>Security, Identity, & Comp</strong> section</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/clicktheiamlink.jpg" />
+</div>
+<div class="col-md-12 step step-2">
+    <h3>Step 2</h3>
+    <div>You will now be in the IAM dashboard. Once here, click the <strong>Users</strong> link</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/clicktheuserslink.jpg" />
+</div>
+<div class="col-md-12 step step-3">
+    <h3>Step 3</h3>
+    <div>In the <strong>Users</strong> screen, click the <strong>Add User</strong> button</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/clicktheadduserbutton.jpg" />
+</div>
+<div class="col-md-12 step step-4">
+    <h3>Step 4</h3>
+    <div>In the <strong>Add user</strong> screen, enter a name for this IAM user account. Something like &quot;RingClone&quot; will do. Also, in the <strong>Access type</strong> section, click the box to enable <strong>Programmatic Access</strong>. Click <strong>Next</strong>.</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/configureiamuser.jpg" />
+</div>
+<div class="col-md-12 step step-5">
+    <h3>Step 5</h3>
+    <div>On the permissions screen, click on the icon labeled <strong>Attach existing policies directly</strong></div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/clickattachexistingpoliciesdirectly.jpg" />
+</div>
+<div class="col-md-12 step step-6">
+    <h3>Step 6</h3>
+    <div>In the Policy type <strong>search</strong> box, enter the text &quot;S3&quot;. Then, click the checkbox next to the item in the list labeled <strong>AmazonS3FullAccess</strong>. Click the <strong>Next</strong> button.</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/selectamazons3fullaccess.jpg" />
+</div>
+<div class="col-md-12 step step-7">
+    <h3>Step 7</h3>
+    <div>Review your settings and click <strong>Create User</strong></div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/clickcreateuser.jpg" />
+</div>
+<div class="col-md-12 step step-8">
+    <h3>Step 8</h3>
+    <div>On the next screen you will see a grid with columns for <strong>User</strong>, <strong>Access key ID</strong>, and <strong>Secret access key</strong>. Highlight the text under <strong>Access key ID</strong> and copy the value to the clipboard.</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/selectaccesskeyid.jpg" />
+</div>
+<div class="col-md-12 step step-9">
+    <h3>Step 9</h3>
+    <div>Switch over to the RingClone portal and paste the Access key ID to the <strong>Access Key Id</strong> field in the RingClone portal</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/pasteaccesskeyid.jpg" />
+</div>
+<div class="col-md-12 step step-10">
+    <h3>Step 10</h3>
+    <div>Switch back over to the Amazon portal and click on <strong>Show</strong> under the <strong>Secret access key</strong> column. Copy this text to the clipboard.</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/showandcopysecretaccesskey.jpg" />
+</div>
+<div class="col-md-12 step step-11">
+    <h3>Step 11</h3>
+    <div>Switch back over to the RingClone portal and paste the Secret access key (you just copied) to the <strong>Secret Access Key</strong> field in the RingClone portal. Click <strong>Next</strong></div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/pastesecretaccesskey.jpg" />
+</div>
+<div class="col-md-12 step step-12">
+    <h3>Step 12</h3>
+    <div>At this point the RingClone system will attempt to validate the <strong>Access Key Id</strong> and <strong>Secret Access Key</strong></div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/validating.jpg" />
+</div>
+<div class="col-md-12 step step-13">
+    <h3>Step 13</h3>
+    <div>After the validation completes, click on the <strong>Next</strong> button</div>
+    <img class="img-responsive" src="~/Images/amazonwalkthrough/validated.jpg" />
+</div>
+<div class="col-md-12 step step-14">
+    <h3>The Amazon setup process is complete.</h3>
+</div>

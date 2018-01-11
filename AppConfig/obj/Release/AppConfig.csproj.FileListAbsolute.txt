@@ -1,0 +1,5 @@
+D:\APD\RingClone\AppConfig\bin\Release\RingClone.AppConfig.dll
+D:\APD\RingClone\AppConfig\bin\Release\RingClone.AppConfig.pdb
+D:\APD\RingClone\AppConfig\obj\Release\RingClone.AppConfig.dll
+D:\APD\RingClone\AppConfig\obj\Release\RingClone.AppConfig.pdb
+D:\APD\RingClone\AppConfig\obj\Release\AppConfig.csprojResolveAssemblyReference.cache

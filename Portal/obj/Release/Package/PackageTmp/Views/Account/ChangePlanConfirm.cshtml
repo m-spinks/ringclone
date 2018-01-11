@@ -1,0 +1,36 @@
+﻿@model RingClone.Portal.Models.ChangePlanModel
+<style>
+	#changePlanForm {
+		text-align:center;
+	}
+	#changePlanForm .plan {
+		margin-bottom:16px;
+	}
+	.plan {
+		padding:12px;
+	}
+	@@media (min-width:992px) {
+		.plan {
+			padding:48px;
+		}
+	}
+</style>
+<div class="col-sm-3"></div>
+<div class="col-sm-6">
+    <div id="changePlanForm">
+		@Html.BootstrapValidationMessage("")
+        <h2>Please Confirm</h2>
+		<p>You will be changing your plan to the...</p>
+        @{ var plan = RingClone.Portal.Helpers.SubscriptionHelper.SubscriptionPlans.Where(x => x.Id == Model.NewPlanId).First(); }
+        <div class="plan @plan.Id">
+            <h2>@plan.MarketingTitle</h2>
+            @Html.Raw(plan.MarketingDetails)
+            <form action="/Account/ChangePlanResult" method="POST">
+                <input type="submit" value="Confirm" class="btn btn-primary btn-block" />
+                <input type="hidden" name="PlanId" value="@plan.Id" />
+            </form>
+        </div>
+		<a href="@Url.Action("Index","Log")" class="btn btn-default">Cancel</a>
+    </div>
+</div>
+<div class="col-sm-3"></div>

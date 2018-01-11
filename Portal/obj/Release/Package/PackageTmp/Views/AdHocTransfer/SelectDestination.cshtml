@@ -1,0 +1,63 @@
+﻿@model RingClone.Portal.Models.AdHocTransferModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Transfer Files From Your RingCentral Account</h2>
+<p class="small">Select where you would like to transfer your RingCentral voice recordings to...</p>
+<div class="col-sm-3"></div>
+<div class="col-sm-6">
+	<div class="btn-group-vertical btn-group-lg destinations btn-block" role="group" aria-label="...">
+        <div class="col-md-3"><img src="@Url.Content("~/images/box.svg")" alt="box" /></div>
+        <div class="col-md-9">
+            <a class="btn btn-primary btn-block btn-lg" href="@Url.Action("UseBox", "AdHocTransfer")">Transfer RingCentral files to my Box account</a>
+        </div>
+        <div class="col-md-3"><img src="@Url.Content("~/images/google.svg")" alt="google" /></div>
+        <div class="col-md-9">
+            <a class="btn btn-primary btn-block btn-lg" href="@Url.Action("UseGoogle", "AdHocTransfer")">Transfer RingCentral files to my Google Drive</a>
+        </div>
+        <div class="col-md-3"><img src="@Url.Content("~/images/amazon.svg")" alt="amazon" /></div>
+        <div class="col-md-9">
+            <a class="btn btn-primary btn-block btn-lg" href="@Url.Action("UseAmazon", "AdHocTransfer")">Transfer RingCentral files to my Amazon storage</a>
+        </div>
+    </div>
+</div>
+<div class="col-sm-3"></div>
+
+@section style {
+	<style>
+		.destinations .btn {
+			white-space:normal;
+		}
+		@@media (min-width: 768px) {
+			.destinations .small {
+				position:absolute;
+				right:-80px;
+				top:0px;
+				width:80px;
+			}
+		}
+		@@media (min-width: 768px) {
+			.destinations .small {
+				color:#00D191;
+			}
+		}
+		@@media (max-width: 767px) {
+			.destinations .small {
+				color:#fff;
+				border-radius:8px;
+				width:auto;
+				font-style:italic;
+			}
+		}
+		.destinations .small {
+		}
+        @@media (max-width: 992px) {
+            .destinations .col-md-3 {
+                text-align:center;
+                margin-bottom:6px;
+            }
+        }
+        .destinations img {
+            margin-top:20px;
+        }
+	</style>
+}

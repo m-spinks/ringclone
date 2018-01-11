@@ -1,0 +1,158 @@
+﻿    <!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+		<title>RingClone</title>
+        <link href="@Url.Content("~/images/icon-hires.png")" rel="shortcut icon" type="image/x-icon" />
+        <meta name="viewport" content="width=device-width" />
+		<link href="//fonts.googleapis.com/css?family=Open+Sans|Dosis:400,800" rel="stylesheet" type="text/css" />
+		@*<link href="@Url.Content("~/lib/bootstrap-3.3.5/css/bootstrap.min.css")" rel="stylesheet" type="text/css" />*@
+		<link href="@Url.Content("~/images/apple-touch-icon.png")" rel="apple-touch-icon" />
+		<link href="@Url.Content("~/images/apple-touch-icon-76x76.png")" rel="apple-touch-icon" sizes="76x76" />
+		<link href="@Url.Content("~/images/apple-touch-icon-120x120.png")" rel="apple-touch-icon" sizes="120x120" />
+		<link href="@Url.Content("~/images/apple-touch-icon-152x152.png")" rel="apple-touch-icon" sizes="152x152" />
+		<link href="@Url.Content("~/images/apple-touch-icon-180x180.png")" rel="apple-touch-icon" sizes="180x180" />
+		<link href="@Url.Content("~/images/icon-hires.png")" rel="icon" sizes="192x192" />
+		<link href="@Url.Content("~/images/icon-normal.png")" rel="icon" sizes="128x128" />
+		@Styles.Render("~/content/styles")
+		@RenderSection("style", required: false)
+    </head>
+    <body>
+
+		<header>
+            <nav class="navbar navbar-inverse">
+                <div class="container">
+                    @*container-fluid*@
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <img src='@Url.Content("~/images/header-logo-inverse-top.svg")' style="margin-top:5px;" alt="Ring Clone" />
+                        <img src='@Url.Content("~/images/header-logo-inverse-bottom.svg")' style="margin-top:5px;" alt="Ring Clone" />
+                    </div>
+                    <div class="collapse navbar-collapse" id="myNavbar">
+                        <ul class="nav navbar-nav navbar-right">
+                            <li>
+                                <a href="#" class="disabled">
+                                    Log
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="disabled">
+                                    Auto-Archiving
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="disabled">
+                                    History
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="disabled">
+                                    Connections
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="disabled">
+                                    Account
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" id="btnLogout" data-toggle="modal" data-target=".logoff">
+                                    Logoff
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+		</header>
+		<div id="body" class="container">
+			<div class="row">
+				<section class="content-wrapper main-content clear-fix">
+					@RenderBody()
+				</section>
+			</div>
+		</div>
+        <footer class="inverse">
+            <div class="content-wrapper">
+                <div class="container">
+                    <div class="pull-left">
+                        <p>&copy; @DateTime.Now.Year - RingClone</p>
+                    </div>
+                    <div class="pull-right">
+                        <p><img src="~/Images/footer-logo.svg" /></p>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <div class="help-button">
+            <btn class="btn btn-primary btn-sm" data-toggle="modal" data-target=".help"><div class="question-mark">?</div>Need help?<br />Have a question?</btn>
+        </div>
+
+        <div class="modal logoff" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4>Logoff</h4>
+                    </div>
+                    <div class="modal-body">Are you sure you want to log-off?</div>
+                    <div class="modal-footer">
+                        @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoffForm" }))
+                        {
+                            @Html.AntiForgeryToken()
+                            <a id="logoff" href="javascript:document.getElementById('logoffForm').submit()" class="btn btn-primary btn-block" style="display: none">Log Off</a>
+                            <script>
+                            //<!--
+                            var l = document.getElementById('logoff');
+                            if (typeof (l) != 'undefined' && l != null)
+                                l.style.display = "inline";
+                            //-->
+                            </script>
+                            <noscript>
+                                <input type="submit" value="Log Off" />
+                            </noscript>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal help" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>We're Here For You!</h3>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            Do you have a question? A comment? A suggestion? Let us know below, and we'll get back to you as soon as possible.
+                        </p>
+                        <p>
+                            Are you experiencing issues or recieving an error message? If so, can you give us a brief description of what is going on? We'll figure out the problem and get back with you as soon as we can.
+                        </p>
+                        <div class="form-group">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" rows="5" id="helpMessage" maxlength="1000"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Contact Email</label>
+                            <input type="text" class="form-control" maxlength="500" id="helpContactEmail" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <btn class="btn btn-primary pull-left" data-dismiss="modal" data-target=".help">Cancel</btn>
+                        <btn class="btn btn-primary pull-right" id="helpSubmitButton">Submit</btn>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		@Scripts.Render("~/content/scripts")
+		@RenderSection("scripts", required: false)
+
+	</body>
+</html>

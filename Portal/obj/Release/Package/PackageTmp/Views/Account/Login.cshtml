@@ -1,0 +1,194 @@
+﻿@{Layout = "~/Views/Shared/_LayoutPublic.cshtml";}
+@section style {
+    <style>
+        .main-content {
+            padding-top:64px;
+        }
+        .message-container {
+            text-align: center;
+            margin-top: 24px;
+        }
+        .connecting {
+            padding-top:15px;
+        }
+        .validating img {
+            padding-top: 18px;
+        }
+        .sub-title {
+            margin-top:12px;
+        }
+
+
+        .manual-nav {
+            text-align: left;
+            font-size: .90em;
+            opacity: 0;
+            opacity: 1 \9; /*just in case ie*/
+            -webkit-animation: fadein 1s;
+            -moz-animation: fadein 1s;
+            -ms-animation: fadein 1s;
+            -o-animation: fadein 1s;
+            animation: fadein 1s;
+            -webkit-animation-fill-mode: forwards;
+            -moz-animation-fill-mode: forwards;
+            -ms-animation-fill-mode: forwards;
+            -o-animation-fill-mode: forwards;
+            animation-fill-mode: forwards;
+            -webkit-animation-delay: 3s;
+            -moz-animation-delay: 3s;
+            -ms-animation-delay: 3s;
+            -o-animation-delay: 3s;
+            animation-delay: 3s;
+        }
+
+        @@keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+        /* Firefox < 16 */
+        @@-moz-keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+        /* Safari, Chrome and Opera > 12.1 */
+        @@-webkit-keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+        /* Internet Explorer */
+        @@-ms-keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+        /* Opera < 12.1 */
+        @@-o-keyframes fadein {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @@keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+        /* Firefox < 16 */
+        @@-moz-keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+        /* Safari, Chrome and Opera > 12.1 */
+        @@-webkit-keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+        /* Internet Explorer */
+        @@-ms-keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+        /* Opera < 12.1 */
+        @@-o-keyframes fadeout {
+            from {
+                opacity: 1;
+            }
+
+            to {
+                opacity: 0;
+            }
+        }
+    </style>
+}
+@section scripts {
+    <script>
+        setTimeout(function () {
+            $('#loginForm').submit();
+        }, 5000);
+    </script>
+}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 col-sm-2"></div>
+        <div class="col-md-6 col-sm-8">
+            <div class="row">
+                <div class="col-xs-4">
+                    <img src="@Url.Content("~/images/login-logo-ringclone.svg")" class="img img-responsive" />
+                </div>
+                <div class="col-xs-4 text-center connecting">
+                    <img src="~/images/connecting.svg" class="img img-responsive" />
+                    <img src="~/images/train.gif" class="img img-responsive" />
+                </div>
+                <div class="col-xs-4">
+                    <img src="@Url.Content("~/images/login-logo-ringcentral.png")" class="img img-responsive pull-right" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-sm-12 sub-title">
+                    <p class="">RingClone is connecting to your RingCentral account</p>
+                </div>
+            </div>
+            <div class="row manual-nav">
+                <p class="col-sm-12 small">
+                    If you are not automatically redirected in 3 seconds, please click below:
+                </p>
+                <form action="@RingCentral.Config.AuthUrl" method="GET" id="loginForm" class="col-sm-12">
+                    <p>
+                        <input type="hidden" name="response_type" value="code" />
+                        <input type="hidden" name="client_id" value="@RingCentral.Config.AppKey" />
+                        <input type="hidden" name="redirect_uri" value="@RingCentral.Config.RedirectUri" />
+                        <input type="hidden" name="state" value="@HttpUtility.UrlEncode(ViewBag.state)" />
+                        <input type="hidden" name="ReturnUrl" value="@ViewBag.returnUrl" />
+                        <button type="submit" class="btn btn-primary btn-block">Login</button>
+                    </p>
+                </form>
+            </div>
+            <div class="row">
+            </div>
+            @Html.BootstrapValidationMessage("")
+        </div>
+        <div class="col-md-3 col-sm-2"></div>
+    </div>
+</div>

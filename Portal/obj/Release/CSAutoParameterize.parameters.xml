@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="AzureWebJobsDashboard-Web.config Connection String" description="AzureWebJobsDashboard Connection String used in web.config by the application to access the database." defaultValue="DefaultEndpointsProtocol=https;AccountName=ringclone;AccountKey=isulu48ionaeU2aYu2mj2P6HvuF/6cFvvIVHZLvRgsoFFK5yp+2qoxAeUi/P5hOVu2+uSvRRpA52k79NeEG6sw==" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="D:\\APD\\RingClone\\Portal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='AzureWebJobsDashboard']/@connectionString" />
+  </parameter>
+  <parameter name="AzureWebJobsStorage-Web.config Connection String" description="AzureWebJobsStorage Connection String used in web.config by the application to access the database." defaultValue="DefaultEndpointsProtocol=https;AccountName=ringclone;AccountKey=isulu48ionaeU2aYu2mj2P6HvuF/6cFvvIVHZLvRgsoFFK5yp+2qoxAeUi/P5hOVu2+uSvRRpA52k79NeEG6sw==" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="D:\\APD\\RingClone\\Portal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='AzureWebJobsStorage']/@connectionString" />
+  </parameter>
+  <parameter name="RingCloneDatabase-Web.config Connection String" description="RingCloneDatabase Connection String used in web.config by the application to access the database." defaultValue="Server=tcp:northtech.database.windows.net,1433;Database=RingClone;User ID=northtech@northtech;Password=123!@#qweQWE;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" tags="SqlConnectionString">
+    <parameterEntry kind="XmlFile" scope="D:\\APD\\RingClone\\Portal\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='RingCloneDatabase']/@connectionString" />
+  </parameter>
+</parameters>

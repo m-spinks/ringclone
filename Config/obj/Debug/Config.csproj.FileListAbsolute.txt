@@ -1,0 +1,4 @@
+D:\APD\RingClone\Config\bin\Debug\RingClone.Config.dll
+D:\APD\RingClone\Config\bin\Debug\RingClone.Config.pdb
+D:\APD\RingClone\Config\obj\Debug\RingClone.Config.dll
+D:\APD\RingClone\Config\obj\Debug\RingClone.Config.pdb

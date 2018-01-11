@@ -1,0 +1,52 @@
+﻿@model RingClone.Portal.Models.SimpleAutomationModel
+
+@Html.BootstrapValidationMessage("")
+<div class="col-sm-3"></div>
+<div class="col-sm-6">
+@using (Html.BeginForm("PutInDatedSubFolder", "SimpleAutomation", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <h2 class="">Set Up RingClone Automation</h2>
+    <p class="small">Would you like to put the saved files into a dated sub-folder (201609, 201610, 201611, etc) within the selected folder?</p>
+    <div class="row">
+        <div class="form-group" style="text-align:center;">
+            <label for="putInDatedSubfolder">Put in dated sub-folder</label>
+            <input type="checkbox" id="putInDatedSubfolder" name="PutInDatedSubfolder" @if (Model.PutInDatedSubFolder) { <text> checked</text>} />
+        </div>
+    </div>
+    <a href="@Url.Action("SelectLogsAndContent", "SimpleAutomation")" class="btn btn-primary btn-lg pull-left">Prev</a>
+    <input type="submit" class="btn btn-primary btn-lg pull-right" value="Next" />
+}
+</div>
+<div class="col-sm-3"></div>
+
+@section style {
+	<style>
+		.destinations .btn {
+			white-space:normal;
+		}
+		@@media (min-width: 768px) {
+			.destinations .small {
+				position:absolute;
+				right:-80px;
+				top:0px;
+				width:80px;
+			}
+		}
+		@@media (min-width: 768px) {
+			.destinations .small {
+				color:#00D191;
+			}
+		}
+		@@media (max-width: 767px) {
+			.destinations .small {
+				color:#fff;
+				border-radius:8px;
+				width:auto;
+				font-style:italic;
+			}
+		}
+		.destinations .small {
+		}
+	</style>
+}

@@ -1,0 +1,76 @@
+﻿<style>
+	#changePlanForm {
+		text-align: center;
+	}
+	#changePlanForm .row {
+		margin-bottom: 16px;
+	}
+	@@media (min-width:767px) {
+		.plan ul {
+			min-height:280px;
+		}
+	}
+    @@media (min-width:767px) and (max-width:1199px) {
+	    .plan ul {
+		    min-height:200px;
+	    }
+    }
+	.free-label {
+		position: absolute;
+		top: -24px;
+		display: block;
+		background: #ffbf81;
+		width: 100%;
+		margin-left: -16px;
+		text-align: center;
+		height: 23px;
+		border: solid 1px #fff;
+		border-bottom: none;
+		/* padding: 2px 4px; */
+		font-size: 1.25em;
+		color: #fff;
+		box-sizing: content-box;
+	}
+	#changePlanForm h2 {
+		margin-bottom:32px;
+	}
+</style>
+
+<div class="col-lg-1"></div>
+<div class="col-lg-10">
+	<div id="changePlanForm">
+		<h2>Select a Plan</h2>
+		@Html.BootstrapValidationMessage("")
+		<div class="row subscription-plans">
+			@foreach (var plan in RingClone.Portal.Helpers.SubscriptionHelper.SubscriptionPlans)
+			{
+				<div class="col-sm-6 col-lg-3 plan @plan.Id">
+					@if (plan.Id == "ringclone_bronze")
+					{
+					<div class="free-label">Free!</div>
+					}
+					<h2>@plan.MarketingTitle</h2>
+					@Html.Raw(plan.MarketingDetails)
+					<form action="/Register/ChoosePlan" method="POST">
+						<input type="submit" value="Select the @plan.MarketingTitle" class="btn btn-primary btn-block" style="white-space:normal;" />
+						<input type="hidden" name="PlanId" value="@plan.Id" />
+					</form>
+				</div>
+			}
+		</div>
+	</div>
+</div>
+<div class="col-lg-1"></div>
+
+@section scripts {
+	<script>
+		$(document).ready(function () {
+			$('.plan input[type="submit"]').on('mouseover', function () {
+				$(this).closest('.plan').addClass('hover');
+			}).on('mouseout', function () {
+				$(this).closest('.plan').removeClass('hover');
+			})
+		});
+
+	</script>
+}

@@ -1,0 +1,772 @@
+﻿@model RingClone.Portal.Models.LogViewModel
+
+@Html.BootstrapValidationMessage("")
+@if (Model.HasPaidAccount && Model.HasAutomation) {
+<h2 class="">Activity Log</h2>
+<p class="small">&nbsp;</p>
+} else {
+<h2 class="">Archive Files From Your RingCentral Account</h2>
+<p class="small">Select files to archive from your RingCentral account...</p>
+}
+    <div class="row">
+        <div class="col-sm-12 validation-messages"></div>
+    </div>
+    <form class="row search-bar">
+        <div class="col-md-2">
+            <label for="extensionPicker">Extension</label>
+            <div class="input-group input-group-sm extension-picker" id="extensionPicker">
+                <input type="text" class="form-control extension-number" name="Extension" aria-label="Extension Number">
+                <div class="input-group-btn">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Ext # <span class="caret"></span></button>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <ul class="extensions"></ul>
+                        <ul class="all">
+                            <li class="list-group-item list-group-item-primary active" style="cursor: pointer;" data-extensionnumber=""><span class="state-icon glyphicon glyphicon-check"></span> <strong>All Extensions</strong></li>
+                        </ul>
+                        <div class="navigation">
+                            <button class="first" type="button"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></button>
+                            <button class="prev" type="button"><span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span></button>
+                            <button class="next" type="button"><span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span></button>
+                            <button class="last" type="button"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <label for="typePicker">Type</label>
+            <div class="btn-group btn-group-sm type-picker" role="group" aria-label="..." id="typePicker">
+                <button type="button" class="btn@(Model.Type == "voice" ? " active" : "")" data-type="voice"><span class="state-icon glyphicon glyphicon-@(Model.Type == "voice" ? "check" : "unchecked")"></span> Recorded Calls &amp; Voicemails</button>
+                <button type="button" class="btn@(Model.Type == "fax" ? " active" : "")" data-type="fax"><span class="state-icon glyphicon glyphicon-@(Model.Type == "fax" ? "check" : "unchecked")"></span> Faxes</button>
+                <button type="button" class="btn@(Model.Type == "sms" ? " active" : "")" data-type="sms"><span class="state-icon glyphicon glyphicon-@(Model.Type == "sms" ? "check" : "unchecked")"></span> Text/SMS</button>
+                <input type="hidden" name="Type" value="@Model.Type" />
+            </div>
+            <div class="clearfix"></div>
+        </div>
+        <div class="col-md-2">
+            <label for="dateFrom">Date Range</label>
+            <input type="text" class="form-control input-sm" name="DateFrom" id="dateFrom" placeholder="Date From" value="@Model.DateFrom.Value.ToString("MM/dd/yyyy")" />
+        </div>
+        <div class="col-md-2">
+            <label for="dateTo" class="hidden-xs hidden-sm">&nbsp;</label>
+            <input type="text" class="form-control input-sm" name="DateTo" id="dateTo" placeholder="Date To" value="@Model.DateTo.Value.ToString("MM/dd/yyyy")" />
+        </div>
+        <div class="col-md-1">
+            <label>&nbsp;</label>
+            <input type="submit" class="btn btn-sm btn-default" value="Refresh" />
+        </div>
+    </form>
+@using (Html.BeginForm("", "AdHocTransfer", FormMethod.Post, new { id="form" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row">
+        <div class="col-md-12 explorer call-log">
+            <div id="callLogExplorer">
+                <div class="grid-header">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th class="select"><input type="checkbox" class="select-all" id="selectAll" /></th>
+                                <th class="type">Type</th>
+                                <th class="phone-number">Phone Number</th>
+                                <th class="name cover-page-text subject">Name</th>
+                                <th class="date">Date / Time</th>
+                                <th class="action direction">Action</th>
+                                <th class="result message-status">Result</th>
+                                <th class="length fax-page-count">Length</th>
+                                <th class="archive">Archive Status</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+                <div class="grid-body">
+                    <table>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="navigation">
+                    <button class="btn btn-default first" type="button"><span class="glyphicon glyphicon-step-backward" aria-hidden="true"></span></button>
+                    <button class="btn btn-default prev" type="button"><span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span></button>
+                    <button class="btn btn-default next" type="button"><span class="glyphicon glyphicon-triangle-right" aria-hidden="true"></span></button>
+                    <button class="btn btn-default last" type="button"><span class="glyphicon glyphicon-step-forward" aria-hidden="true"></span></button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row actions-for-selection" style="display:none;">
+        <div class="col-md-6">
+            <input type="submit" class="btn btn-block btn-primary btn-lg" value="Archive these files now" />
+        </div>
+        <div class="col-md-6">
+            <a href="@Url.Action("ViaLetRingClone", "SimpleAutomation", new { returnUrl="~/Log" })" class="btn btn-block btn-primary btn-lg">Let RingClone do the archiving<br />automatically every day.</a>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script>
+    var loadHandlerId = '';
+    var submitted = false;
+    var callsLoaded = false;
+    var extensionsLoaded = false;
+    $(document).ready(function () {
+        loadCalls();
+        loadExtensions();
+        var opts = {
+            todayHighlight: true,
+            autoclose: true
+        };
+        $('#dateFrom').datepicker(opts);
+        $('#dateTo').datepicker(opts);
+        $('form.search-bar').submit(function (evt) {
+            evt.preventDefault();
+            loadCalls();
+        });
+        $('form#form').submit(function () {
+            $('form#form :input[type=submit]').prop('disabled', true);
+            $('form#form :input[isacopy]').remove();
+            if (submitted) return false;
+            $('form.search-bar :input').not(':submit').clone().hide().attr('isacopy', 'y').appendTo('form#form');
+            submitted = true;
+            return true;
+        });
+        $('#typePicker button').on('click', function (e) {
+            var type = $(this).data('type');
+            if (type != $('#typePicker input').val()) {
+                $('#typePicker input').val(type);
+                $('#typePicker button').each(function () {
+                    if ($(this).data('type') == type) {
+                        $(this).addClass('active');
+                        $(this).find('.state-icon')
+                            .removeClass()
+                            .addClass('state-icon glyphicon glyphicon-check');
+                    } else {
+                        $(this).removeClass('active');
+                        $(this).find('.state-icon')
+                            .removeClass()
+                            .addClass('state-icon glyphicon glyphicon-unchecked');
+                    }
+                    clearTimeout(loadHandlerId);
+                    loadHandlerId = setTimeout(loadCalls, 700);
+                });
+            }
+        });
+        //EXTENSION PICKER EVENTS
+        $('#extensionPicker .dropdown-menu').on("click.bs.dropdown", function (e) { e.stopPropagation(); e.preventDefault(); });
+        $('#extensionPicker ul').on('click', 'li', function () {
+            var ext = $(this).data('extensionnumber');
+            $('#extensionPicker input').val(ext);
+            setTimeout(function () {
+                $('#extensionPicker .input-group-btn').removeClass('open');
+            }, 150);
+            $('#extensionPicker ul.extensions li').each(function () {
+                if ($(this).data('extensionnumber') == ext) {
+                    $(this).addClass('active');
+                    $(this).find('.state-icon')
+                        .removeClass()
+                        .addClass('state-icon glyphicon glyphicon-check');
+                } else {
+                    $(this).removeClass('active');
+                    $(this).find('.state-icon')
+                        .removeClass()
+                        .addClass('state-icon glyphicon glyphicon-unchecked');
+                }
+            });
+            if (ext === '') {
+                $('#extensionPicker ul.all li')
+                    .addClass('active');
+                $('#extensionPicker ul.all li .state-icon')
+                    .removeClass()
+                    .addClass('state-icon glyphicon glyphicon-check');
+            } else {
+                $('#extensionPicker ul.all li')
+                    .removeClass('active');
+                $('#extensionPicker ul.all li .state-icon')
+                    .removeClass()
+                    .addClass('state-icon glyphicon glyphicon-unchecked');
+            }
+            clearTimeout(loadHandlerId);
+            loadHandlerId = setTimeout(loadCalls, 700);
+        });
+        //CALL LOG GRID EVENTS
+        //CALL LOG GRID SCROLLING
+        var gridLastX = -1;
+        $('#callLogExplorer .grid-body').scroll(function (e) {
+            var x = $("#callLogExplorer .grid-body").scrollLeft();
+            if (x != gridLastX) {
+                $('#callLogExplorer .grid-header table').css("margin-left", -$("#callLogExplorer .grid-body").scrollLeft());
+                x = gridLastX;
+            }
+        });
+        $('body').on('click', '#callLogExplorer tbody tr', function (e) {
+            var checked;
+            var row = $(this);
+            if ($(e.target).closest('input[type="checkbox"]').length > 0) {
+                //clicked on the checkbox
+                checked = $(this).find('input[type="checkbox"]').prop('checked');
+            } else {
+                //Clicked on the tr
+                if ($(this).find('input[type="checkbox"]').prop('checked')) {
+                    checked = false;
+                    $(this).find('input[type="checkbox"]').prop("checked", false);
+                } else {
+                    checked = true;
+                    $(this).find('input[type="checkbox"]').prop("checked", true);
+                }
+            }
+            if (checked) {
+                row.addClass('selected');
+            } else {
+                row.removeClass('selected');
+            }
+            syncCheckboxes();
+        });
+        $('#selectAll').click(function () {
+        });
+        $('body').on('click', '#callLogExplorer thead th.select', function (e) {
+            var checked;
+            var cell = $(this);
+            if ($(e.target).closest('input[type="checkbox"]').length > 0) {
+                //clicked on the checkbox
+                checked = $(this).find('input[type="checkbox"]').prop('checked');
+            } else {
+                //Clicked on the td
+                if ($(this).find('input[type="checkbox"]').prop('checked')) {
+                    checked = false;
+                    $(this).find('input[type="checkbox"]').prop("checked", false);
+                } else {
+                    checked = true;
+                    $(this).find('input[type="checkbox"]').prop("checked", true);
+                }
+            }
+            $('#callLogExplorer tbody input[type="checkbox"]').each(function () {
+                $(this).prop('checked', checked);
+                if (checked) {
+                    var row = $(this).closest('tr');
+                    row.addClass('selected');
+                    var id = $(this).id;
+                } else {
+                    var row = $(this).closest('tr');
+                    row.removeClass('selected');
+                    var id = $(this).id;
+                }
+            });
+            if (checked) {
+                $(".actions-for-selection").show();
+            } else {
+                $(".actions-for-selection").hide();
+            }
+        });
+    });
+    function loadExtensions(navTo) {
+        $('#extensionPicker .navigation button').prop("disabled", true);
+        $('#extensionPicker .navigation button').off("click");
+        $('#extensionPicker').addClass('loading');
+        $('#extensionPicker ul.extensions').html("<li><img src='images/spinner-small.gif' /> Loading...</li>");
+        //ENSURE CALLS ARE LOADED FIRST
+        if (!callsLoaded) {
+            setTimeout(function (navTo) {
+                loadExtensions(navTo);
+            }, 1500);
+            return;
+        }
+        $.ajax({
+            url: "/api/ringcentral/extensions",
+            data: { navTo: navTo },
+            complete: function () {
+                $('#extensionPicker').removeClass('loading');
+            },
+            success: function (result) {
+                $('#extensionPicker ul.extensions').html("");
+                if (result && result.extensions && result.extensions.length > 0) {
+                    var selected = $('#extensionPicker input').val().split(',');
+                    for (var i in result.extensions) {
+                        var ext = result.extensions[i];
+                        var active = "";
+                        var icon = "glyphicon-unchecked";
+                        for (var i in selected) {
+                            if (selected[i] == ext.ExtensionNumber) {
+                                active = "active";
+                                icon = "glyphicon-check";
+                                break;
+                            }
+                        }
+                        $('#extensionPicker ul.extensions').append('<li class="list-group-item list-group-item-primary ' + active + '" style="cursor: pointer;" data-extensionnumber="' + ext.ExtensionNumber + '"><span class="state-icon glyphicon ' + icon + '"></span> <strong>' + ext.ExtensionNumber + '</strong> (' + ext.Name + ')' + '</li>');
+                    }
+                } else {
+                    $('#extensionPicker ul.extensions').append('<li>No extensions found</li>');
+                }
+                if (result.navigation) {
+                    var navButtons = '<li>';
+                    if (result.navigation.firstPage && result.navigation.prevPage) {
+                        $('#extensionPicker button.first').click(function () {
+                            loadExtensions(result.navigation.firstPage);
+                        })
+                        $('#extensionPicker button.first').prop("disabled", false);
+                    }
+                    if (result.navigation.prevPage) {
+                        $('#extensionPicker button.prev').click(function () {
+                            loadExtensions(result.navigation.prevPage);
+                        })
+                        $('#extensionPicker button.prev').prop("disabled", false);
+                    }
+                    if (result.navigation.nextPage) {
+                        $('#extensionPicker button.next').click(function () {
+                            loadExtensions(result.navigation.nextPage);
+                        })
+                        $('#extensionPicker button.next').prop("disabled", false);
+                    }
+                    if (result.navigation.lastPage && result.navigation.nextPage) {
+                        $('#extensionPicker button.last').click(function () {
+                            loadExtensions(result.navigation.lastPage);
+                        })
+                        $('#extensionPicker button.last').prop("disabled", false);
+                    }
+                }
+                extensionsLoaded = true;
+            },
+            failure: function () {
+                $('#extensionPicker ul.extensions').html(
+                    '<li class="alert alert-danger">' +
+                    '<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>' +
+                    '<span class="sr-only">Error:</span>' +
+                    'An unknown error occurred',
+                    '</li>'
+                );
+            }
+        });
+    }
+    function loadCalls(navTo) {
+        $('.call-log button').prop("disabled", true);
+        $('.call-log button').off("click");
+        $('.explorer').mask("Loading...");
+        var type = $('#typePicker input').val();
+        $.ajax({
+            url: "/api/generallog",
+            data: {
+                extension: $('input[name=Extension]').val(),
+                dateFrom: $('input[name=DateFrom]').val(),
+                dateTo: $('input[name=DateTo]').val(),
+                type: type,
+                navTo: navTo
+            },
+            complete: function () {
+                $('.explorer.call-log').unmask();
+            },
+            success: function (result) {
+                //BUILD FOLDER AND FILE LIST
+                if (result) {
+                    if (result.LogEntries && result.LogEntries.length > 0) {
+                        $('#callLogExplorer tbody').html("");
+                        $(".actions-for-selection").hide();
+                        if (result.Type == "voice") {
+                            $('#callLogExplorer thead th.name').html('Name');
+                            $('#callLogExplorer thead th.action').html('Action');
+                            $('#callLogExplorer thead th.result').html('Result');
+                            $('#callLogExplorer thead th.length').html('Length');
+                            for (var i in result.LogEntries) {
+                                var f = result.LogEntries[i];
+                                $('#callLogExplorer tbody').append(
+                                    '<tr class="' + f.Display.RowClass + '" data-id="' + f.Id + '">' +
+                                    '<td class="select"><input type="checkbox" name="LogEntries" value="' + f.Id + '"/></td>' +
+                                    '<td class="type">' + f.Display.Type + '</td>' +
+                                    '<td class="phone-number">' + f.Display.PhoneNumber + '</td>' +
+                                    '<td class="name">' + f.Display.Name + '</td>' +
+                                    '<td class="date">' + f.Display.Date + '</td>' +
+                                    '<td class="action">' + f.Display.Action + '</td>' +
+                                    '<td class="result">' + f.Display.Result + '</td>' +
+                                    '<td class="length">' + f.Display.Length + '</td>' +
+                                    '<td class="archive"><span data-toggle="tooltip" data-placement="left" title="' + f.Display.ArchiveTooltip + '">' + f.Display.ArchiveStatus + '</span><img src="images/' + f.Display.ArchiveIcon + '" /></td>' +
+                                    '</tr>'
+                                );
+                            }
+                        } else if (result.Type == "fax") {
+                            $('#callLogExplorer thead th.cover-page-text').html('Cover Page Text');
+                            $('#callLogExplorer thead th.direction').html('Direction');
+                            $('#callLogExplorer thead th.message-status').html('Status');
+                            $('#callLogExplorer thead th.fax-page-count').html('Pages');
+                            for (var i in result.LogEntries) {
+                                var f = result.LogEntries[i];
+                                $('#callLogExplorer tbody').append(
+                                    '<tr class="' + f.Display.RowClass + '" data-id="' + f.Id + '">' +
+                                    '<td class="select"><input type="checkbox" name="LogEntries" value="' + f.Id + '"/></td>' +
+                                    '<td class="type">' + f.Display.Type + '</td>' +
+                                    '<td class="phone-number">' + f.Display.PhoneNumber + '</td>' +
+                                    '<td class="cover-page-text">' + f.Display.CoverPageText + '</td>' +
+                                    '<td class="date">' + f.Display.Date + '</td>' +
+                                    '<td class="direction">' + f.Display.Direction + '</td>' +
+                                    '<td class="message-status">' + f.Display.MessageStatus + '</td>' +
+                                    '<td class="fax-page-count">' + f.Display.FaxPageCount + '</td>' +
+                                    '<td class="archive"><span data-toggle="tooltip" data-placement="left" title="' + f.Display.ArchiveTooltip + '">' + f.Display.ArchiveStatus + '</span><img src="images/' + f.Display.ArchiveIcon + '" /></td>' +
+                                    '</tr>'
+                                );
+                            }
+                        } else if (result.Type == "sms") {
+                            $('#callLogExplorer thead th.subject').html('Subject');
+                            $('#callLogExplorer thead th.direction').html('Direction');
+                            $('#callLogExplorer thead th.message-status').html('Status');
+                            $('#callLogExplorer thead th.fax-page-count').html('');
+                            for (var i in result.LogEntries) {
+                                var f = result.LogEntries[i];
+                                $('#callLogExplorer tbody').append(
+                                    '<tr class="' + f.Display.RowClass + '" data-id="' + f.Id + '">' +
+                                    '<td class="select"><input type="checkbox" name="LogEntries" value="' + f.Id + '"/></td>' +
+                                    '<td class="type">' + f.Display.Type + '</td>' +
+                                    '<td class="phone-number">' + f.Display.PhoneNumber + '</td>' +
+                                    '<td class="subject">' + f.Display.Subject + '</td>' +
+                                    '<td class="date">' + f.Display.Date + '</td>' +
+                                    '<td class="direction">' + f.Display.Direction + '</td>' +
+                                    '<td class="message-status">' + f.Display.MessageStatus + '</td>' +
+                                    '<td class="fax-page-count">--</td>' +
+                                    '<td class="archive"><span data-toggle="tooltip" data-placement="left" title="' + f.Display.ArchiveTooltip + '">' + f.Display.ArchiveStatus + '</span><img src="images/' + f.Display.ArchiveIcon + '" /></td>' +
+                                    '</tr>'
+                                );
+                            }
+                        }
+                    } else {
+                        $('#callLogExplorer tbody').html("");
+                        $('#callLogExplorer tbody').append('<tr><td colspan="10" class="no-log">No entries in the log</td></tr>');
+                    }
+                    if (result.Navigation) {
+                        if (result.Navigation.FirstPage && result.Navigation.PrevPage) {
+                            $('.call-log button.first').click(function () {
+                                loadCalls(result.Navigation.FirstPage);
+                            })
+                            $('.call-log button.first').prop("disabled", false);
+                        }
+                        if (result.Navigation.PrevPage) {
+                            $('.call-log button.prev').click(function () {
+                                loadCalls(result.Navigation.PrevPage);
+                            })
+                            $('.call-log button.prev').prop("disabled", false);
+                        }
+                        if (result.Navigation.NextPage) {
+                            $('.call-log button.next').click(function () {
+                                loadCalls(result.Navigation.NextPage);
+                            })
+                            $('.call-log button.next').prop("disabled", false);
+                        }
+                        if (result.Navigation.LastPage && result.Navigation.NextPage) {
+                            $('.call-log button.last').click(function () {
+                                loadCalls(result.Navigation.LastPage);
+                            })
+                            $('.call-log button.last').prop("disabled", false);
+                        }
+                    }
+                    $('[data-toggle="tooltip"]').tooltip({ html: true });
+                }
+                callsLoaded = true;
+            }
+        });
+    }
+    function syncCheckboxes() {
+        var atLeastOneChecked = false;
+        var anyUnchecked = false;
+        $('#callLogExplorer tbody input[type=checkbox]').each(function () {
+            if ($(this).prop('checked')) {
+                atLeastOneChecked = true;
+            } else {
+                anyUnchecked = true;
+            }
+        });
+        if (atLeastOneChecked && !anyUnchecked) {
+            $('#selectAll').prop('checked', true);
+        } else {
+            $('#selectAll').prop('checked', false);
+        }
+        if (atLeastOneChecked) {
+            $(".actions-for-selection").show();
+        } else {
+            $(".actions-for-selection").hide();
+        }
+    }
+    </script>
+}
+
+
+@section style {
+    <style>
+        p.small {
+            margin-bottom: 0px;
+        }
+
+        .search-bar {
+            vertical-align: top;
+            padding-top: 16px;
+            padding-right: 0px;
+            padding-bottom: 16px;
+            padding-left: 0px;
+            margin-top: 8px;
+            margin-bottom: 24px;
+            background-color: #f0f0f0;
+            border: solid 1px #d8d8d8;
+        }
+
+        .search-bar label {
+            font-size: 12px;
+        }
+
+        .search-bar #typePicker button {
+            background-color: #f0f0f0;
+        }
+
+        .search-bar #typePicker button.active {
+            background-color: #fff;
+            box-shadow: none;
+            border: solid 1px #d8d8d8;
+        }
+
+        @@media all and (max-width:991px) {
+            .search-bar label {
+                margin-top: 12px;
+            }
+        }
+
+        .validation-messages .help-block {
+            border: solid 1px #FF0000;
+            border-radius: 3px;
+            background-color: #ffd3d3;
+            color: #DD0000;
+            padding: 12px 6px;
+            margin: 4px 0px;
+        }
+
+        #extensionPicker .dropdown-menu {
+            padding: 0;
+        }
+
+        #extensionPicker ul {
+            background-color: transparent;
+            min-height: 224px;
+            min-width: 200px;
+            padding: 0 0;
+            margin: 0px 0 0;
+            font-size: 13px;
+            text-align: left;
+            list-style: none;
+        }
+
+        #extensionPicker ul.all {
+            min-height: 0;
+        }
+
+        #extensionPicker ul.all li {
+            border-top-color: #000;
+        }
+
+        #extensionPicker li {
+            padding: 3px 20px;
+        }
+
+        #extensionPicker li {
+            width: 200px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+            clear: both;
+            font-weight: 400;
+            line-height: 1;
+            color: #333;
+        }
+
+        #extensionPicker.loading .dropdown-menu {
+            background-color: #eee;
+        }
+
+        #extensionPicker.loading ul.extensions li {
+            padding-top: 24px;
+            text-align: center;
+        }
+
+        #extensionPicker .navigation button {
+            font-size: 8px;
+        }
+
+        #typePicker.btn-group {
+            display: block;
+        }
+
+        form.search-bar input[type=submit] {
+            font-size:9px;
+            min-height:30px;
+            color:#00B277;
+            box-shadow: 1px 1px rgba(0,0,0,.4);
+        }
+        form.search-bar label {
+            display:block;
+        }
+
+        #callLogExplorer {
+            padding-top:12px;
+            padding-bottom:12px;
+        }
+        #callLogExplorer table {
+            border-collapse: collapse;
+        }
+        #callLogExplorer .grid-header {
+            border-top: solid 1px #d8d8d8;
+            border-left: solid 1px #d8d8d8;
+            border-right: solid 1px #d8d8d8;
+            box-shadow: 0px -6px 22px #f0f0f0 inset;
+        }
+
+        #callLogExplorer .grid-body {
+            height: 300px;
+            overflow: auto;
+            border: solid 1px #d8d8d8;
+        }
+
+        #callLogExplorer .grid-header {
+            overflow: hidden;
+            width: 100%;
+        }
+
+        #callLogExplorer td {
+            font-size: 13px;
+            border-bottom: solid 1px #d8d8d8;
+            padding: 4px;
+        }
+
+        #callLogExplorer th {
+            padding: 4px;
+        }
+
+            #callLogExplorer th.select,
+            #callLogExplorer td.select {
+                width: 30px;
+                min-width: 30px;
+                padding: 6px;
+                text-align: center;
+                cursor:pointer;
+            }
+
+            #callLogExplorer th.type,
+            #callLogExplorer td.type {
+                width: 80px;
+                min-width: 80px;
+            }
+
+            #callLogExplorer th.phone-number,
+            #callLogExplorer td.phone-number {
+                width: 160px;
+                min-width: 160px;
+            }
+
+            #callLogExplorer th.name,
+            #callLogExplorer td.name,
+            #callLogExplorer th.cover-page-text,
+            #callLogExplorer td.cover-page-text,
+            #callLogExplorer th.cover-subject,
+            #callLogExplorer td.subject {
+                max-width: 155px;
+                width: 155px;
+                min-width: 155px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            #callLogExplorer th.date,
+            #callLogExplorer td.date {
+                width: 202px;
+                min-width: 202px;
+            }
+
+            #callLogExplorer th.action,
+            #callLogExplorer td.action,
+            #callLogExplorer th.direction,
+            #callLogExplorer td.direction {
+                width: 120px;
+                min-width: 120px;
+            }
+
+            #callLogExplorer th.result,
+            #callLogExplorer td.result,
+            #callLogExplorer th.message-status,
+            #callLogExplorer td.message-status {
+                width: 132px;
+                min-width: 132px;
+            }
+
+            #callLogExplorer th.length,
+            #callLogExplorer td.length,
+            #callLogExplorer th.fax-page-count,
+            #callLogExplorer td.fax-page-count {
+                width: 80px;
+                min-width: 80px;
+            }
+
+            #callLogExplorer th.archive,
+            #callLogExplorer td.archive {
+                width: 161px;
+                min-width: 161px;
+                background-color: #dfffe8;
+                padding-left: 8px;
+                border-left:solid 1px #cfefd8;
+                border-right:solid 1px #cfefd8;
+            }
+            #callLogExplorer td.archive span {
+                display:inline-block;
+                width:122px;
+            }
+            #callLogExplorer td.archive .tooltip-inner {
+                box-shadow: 1px 1px 5px #404040;
+                text-align:left;
+                padding-top:6px;
+                padding-bottom:6px;
+            }
+
+        #callLogExplorer input[type=checkbox] {
+            position: static;
+            margin: 0;
+            display: inline;
+        }
+
+
+        #callLogExplorer tr.no-content {
+            color: #aaa;
+        }
+
+        #callLogExplorer tbody tr {
+            cursor: pointer;
+        }
+
+        #callLogExplorer tr.selected {
+            background-color: #e9ffbb;
+        }
+
+        #callLogExplorer tbody tr:first-child td {
+            border-top: none;
+        }
+
+        #callLogExplorer .no-log {
+            text-align: center;
+            padding: 35px;
+            width: 1138px;
+            cursor: default;
+            background-color: #f8f8f8;
+        }
+
+        .call-log img {
+            width: 17px;
+        }
+
+        .call-log .navigation {
+            text-align: center;
+            border-right: solid 1px #d0d0d0;
+            border-bottom: solid 1px #d0d0d0;
+            border-left: solid 1px #d0d0d0;
+            padding: 2px;
+        }
+        .actions-for-selection {
+            margin-top: 8px;
+            margin-bottom: 8px;
+        }
+        .actions-for-selection .btn {
+            min-height:70px;
+        }
+
+
+    </style>
+}

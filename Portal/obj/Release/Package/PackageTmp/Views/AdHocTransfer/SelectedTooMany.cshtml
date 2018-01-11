@@ -1,0 +1,23 @@
+﻿@model RingClone.Portal.Models.AdHocTransferModel
+
+@Html.BootstrapValidationMessage("")
+<div class="row nav">
+	<div class="col-md-3"></div>
+	<div class="col-md-6">
+		<h2 class="">It Looks Like You Might Need to Upgrade!</h2>
+		<div class="">
+			You are currently signed up for the @Model.SubscriptionPlan plan. You have @Model.AvailableTransfersLeft transfers left in this plan for this month. But you selected @Model.Calls.Count files. <a href="/Payment/Upgrade">Click here</a> to upgrade your plan.
+		</div>
+		<br/>
+		<div class="row">
+			<div class="col-md-6">
+				<a href="@Url.Action("Index", "Log")" class="btn btn-primary btn-lg btn-block">Nah, I'm good with<br />what I've got.</a>
+				<span class="small">(You will be taken back and will need to select a smaller number of files)</span>
+			</div>
+			<div class="col-md-6">
+				<a href="/Payment/Upgrade" class="btn btn-primary btn-lg btn-block">Upgrade My Plan!</a>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-3"></div>
+</div>

@@ -1,0 +1,195 @@
+﻿@model RingClone.Portal.Models.AdHocTransferModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Choose a Box Folder</h2>
+<p class="small">Select a folder in your box account to store your RingCentral files in</p>
+
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8 explorer">
+		<div id="boxBreadcrumbs"><ul class="breadcrumb"></ul></div>
+        <div id="boxUseThisFolder" class="use-this-folder"></div>
+        <div id="boxExplorer" class="btn-group-vertical btn-block"></div>
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+@section style {
+<style>
+	p.small {
+		margin-bottom:0px;
+	}
+	.explorer {
+		min-height:150px;
+		padding-top:12px;
+        margin-top:8px;
+	}
+    #boxUseThisFolder {
+        text-align:center;
+		margin-bottom:24px;
+    }
+    #boxUseThisFolder .btn {
+        padding:24px;
+    }
+	.box-folder img {
+		text-align:left;
+		vertical-align:middle;
+		margin-right:8px;
+	}
+    .box-file img {
+		text-align:left;
+		vertical-align:middle;
+		margin-right:8px;
+    }
+	.input-group.box-folder .folder-name,
+	.input-group.box-file .file-name {
+		border: solid 1px #cccccc;
+		min-height: 46px;
+		padding:6px 14px 4px 14px;
+		width:100%;
+		text-align:left;
+		background-color:#fff;
+		cursor:default;
+	}
+	.input-group.box-folder .folder-name:hover {
+		background-color:#f0f0f0;
+	}
+	.input-group.box-folder:not(:first-child) .folder-name,
+	.input-group.box-file:not(:first-child) .file-name {
+		border-top: none;
+	}
+	.input-group.box-folder:not(:first-child) .input-group-btn .btn,
+	.input-group.box-file:not(:first-child) .input-group-btn .btn {
+		border-top: none;
+	}
+	.input-group.box-folder .input-group-btn .btn,
+	.input-group.box-file .input-group-btn .btn {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+	.input-group.box-file .file-name {
+        border-color:#e8e8e8;
+	}
+	.input-group.box-file,
+	.input-group.box-file .file-name {
+        font-weight:bold;
+        color: #22aaff;
+        width:100%;
+    }
+
+	.breadcrumb {
+		margin-top:0px;
+		margin-bottom:0px;
+		min-height:36px;
+	}
+	div#boxBreadcrumbs {
+		margin-bottom:24px;
+	}
+</style>
+}
+
+@section scripts {
+<script>
+	$(document).ready(function () {
+		loadFolder(0);
+	});
+	function loadFolder(id) {
+		$('.explorer').mask("Loading...");
+		$.ajax({
+			url: "/api/boxexplorer/folder?boxaccountid=@Model.BoxAccountId&folderid=" + id,
+			complete: function() {
+				$('.explorer').unmask();
+			},
+			success: function (result) {
+			    //BUILD FOLDER AND FILE LIST
+			    $('#boxExplorer').html('');
+				if (result) {
+				    //BUILD FOLDER PATH
+				    var folderName = "";
+				    var folderPath = "";
+				    var folderId = 0;
+				    if (result.Breadcrumbs) {
+				        var count = 0;
+				        for (var i in result.Breadcrumbs) {
+				            var f = result.Breadcrumbs[i];
+				            folderId = f.FolderId;
+				            folderName = f.FolderName;
+				            if (count > 0) {
+				                folderPath += '\\';
+				            }
+				            folderPath += folderName;
+				            count++;
+				        }
+				    }
+                    //THIS FOLDER
+				    var paramsForThisFolder = [
+                        { name: "FolderId", value: f.FolderId },
+                        { name: "FolderName", value: f.FolderName },
+                        { name: "FolderPath", value: folderPath }
+				    ];
+				    var queryStringForThisFolder = $.param(paramsForThisFolder);
+				    $('#boxUseThisFolder').html('<a class="btn btn-primary btn-lg" type="button" href="ChooseBoxFolderClick?' + queryStringForThisFolder + '">Use this folder (<strong>' + folderName + '</strong>)</a>');
+				    //BUILD CHILD FOLDERS
+				    if (result.ChildFolders) {
+					    for (var i in result.ChildFolders) {
+					        var f = result.ChildFolders[i];
+					    	var params = [
+                                { name: "FolderId", value: f.FolderId },
+					            { name: "FolderName", value: f.FolderName },
+					            { name: "FolderPath", value: folderPath }
+					        ]
+					        var queryString = $.param(params);
+							$('#boxExplorer').append(
+'<div class="input-group input-group-lg box-folder">' +
+'	<button class="folder-name" onclick="clickFolder(\'' + f.FolderId + '\')"><img src="/images/folder.svg" />' + f.FolderName + '</button>' +
+'	<span class="input-group-btn">' +
+'		<a class="btn btn-default" type="button" href="ChooseBoxFolderClick?' + queryString + '">Use this folder</a>' +
+'	</span>' + 
+'</div>'
+							);
+						}
+					}
+					if (result.ChildFiles) {
+						for (var i in result.ChildFiles) {
+							var f = result.ChildFiles[i];
+							$('#boxExplorer').append(
+'<div class="input-group input-group-lg box-file">' +
+'	<div class="file-name"><img src="/images/file.svg" />' + f.FileName + '</div>' +
+'</div>'
+							);
+							//$('#boxExplorer').append('<div class="box-file"><img src="/images/file.svg" /></div>' + f.FileName + '</div>');
+						}
+					}
+				}
+				//BUILD BREADCRUMBS
+				$('#boxBreadcrumbs ul').html('');
+				var breadcrumbItems = "";
+				if (result.Breadcrumbs) {
+					var folderId = "";
+					var folderName = "";
+					var count = 0;
+					for (var i in result.Breadcrumbs) {
+						var f = result.Breadcrumbs[i];
+						folderId = f.FolderId;
+						folderName = f.FolderName;
+						breadcrumbItems += '<li><a href="#" onclick="clickBreadcrumb(\'' + folderId + '\')">' + folderName + '</a></li>';
+						count++;
+					}
+						$('#boxBreadcrumbs').html(
+	'<ul class="breadcrumb">' +
+	breadcrumbItems +
+	'</ul>'
+						);
+				}
+			}
+		});
+	}
+	function clickFolder(id) {
+		loadFolder(id);
+	}
+	function clickFile(id) {
+	}
+	function clickBreadcrumb(id) {
+		loadFolder(id);
+	}
+</script>}

@@ -1,0 +1,163 @@
+﻿@model RingClone.Portal.Models.HistoryModel
+
+@section style {
+	<style>
+		.history td {
+			padding: 6px 6px 6px 6px;
+		}
+
+		table.history {
+			border: none;
+			table-layout: fixed;
+			width: 100%;
+		}
+
+		table.history td:not(.batch-icon) {
+			border-bottom: solid 1px #ddd;
+		}
+
+		table.history tr:first-child td:not(.batch-icon) {
+			border-top: solid 2px #ddd;
+		}
+
+		table.history tr:last-child td:not(.batch-icon) {
+			border-bottom: solid 2px #ddd;
+		}
+
+		.history .batch-title {
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+		span.log-number {
+            font-weight:bold;
+		}
+		span.create-date {
+            margin-left:24px;
+		}
+		span.total-tickets {
+            margin-left:24px;
+		}
+
+		.history .batch-status {
+			padding-left: 16px;
+			padding-right: 16px;
+			text-align: center;
+			width: 100px;
+		}
+
+		.history .batch-icon {
+			width: 35px;
+			text-align: center;
+		}
+
+		.batch-status.queued {
+			background-color: #e2dec8;
+			color: #000;
+			font-weight: normal;
+		}
+
+		.batch-status.pending {
+			background-color: #d3cdb0;
+			color: #000;
+			font-weight: normal;
+		}
+
+		.batch-status.processing {
+			background-color: #0094ff;
+			color: #fff;
+			font-weight: bold;
+		}
+
+		.batch-status.error {
+			background-color: #ff0000;
+			color: #fff;
+			font-weight: bold;
+		}
+
+		.batch-status.success {
+			background-color: #3dca00;
+			color: #fff;
+			font-weight: bold;
+		}
+	</style>
+}
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">History</h2>
+<table class="table-responsive history">
+	<tbody>
+		@foreach (var batch in Model.TransferBatches)
+		{
+			<tr id="@batch.TransferBatchId">
+                <td class="batch-title @batch.TransferBatchId"><a href="/TransferBatch/@batch.TransferBatchId">@Html.Raw(batch.Title)</a></td>
+				<td class="batch-status @batch.TransferBatchId @batch.StatusCss">@batch.StatusText</td>
+				<td class="batch-icon @batch.TransferBatchId">
+					@if (batch.StatusText == "Processing")
+					{
+						<img src="~/Images/spinner-small.gif" />
+					}
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
+
+@section scripts {
+	<script>
+        $(document).ready(function () {
+            refreshStatus();
+        });
+        function refreshStatus() {
+            $.ajax({
+                url: "/api/history",
+                complete: function () {
+                },
+                success: function (result) {
+                    if (result) {
+                    	if (result.TransferBatches) {
+                    		var table = $('table.history');
+                    		var displayedRows = [];
+                    		var databaseRows = result.TransferBatches;
+                    		var i = 0;
+							$('table.history tr').each(function () {
+							    displayedRows[i] = this;
+								i++;
+							});
+							for (var iDisplay = 0, iDatabase = 0; iDatabase < databaseRows.length || iDisplay < displayedRows.length;) {
+							    var displayedRow = displayedRows[iDisplay];
+							    var databaseRow = databaseRows[iDatabase];
+							    var displayedRowId = parseInt(displayedRow.id);
+							    if (!databaseRow || !databaseRow.TransferBatchId) { // DATABASE HAS ADDED A NEW ROW TO THE TOP, AND WE'VE REACHED THE END OF THE TABLE ROWS. REMOVE THE TRAILING TABLE ROWS.
+							        $(displayedRow).remove();
+							        iDatabase++;
+							        iDisplay++;
+							    } else if (databaseRow.TransferBatchId == displayedRowId) { // IN SYNC. JUST UPDATE.
+							        $('.batch-title.' + databaseRow.TransferBatchId).html('<a href="/TransferBatch/' + databaseRow.TransferBatchId + '">' + databaseRow.Title + '</a>');
+							        $('.batch-status.' + databaseRow.TransferBatchId).html(databaseRow.StatusText);
+							        $('.batch-status.' + databaseRow.TransferBatchId).addClass(databaseRow.StatusCss);
+							        if (databaseRow.StatusText == "Processing") {
+							            $('.batch-icon.' + databaseRow.TransferBatchId).html("<img src='/images/spinner-small.gif' />");
+							        } else {
+							            $('.batch-icon.' + databaseRow.TransferBatchId).html("");
+							        }
+							        iDatabase++;
+							        iDisplay++;
+							    } else if (databaseRow.TransferBatchId > displayedRowId) { // DATABASE HAS A HIGHER ID NUMBER FOR THIS ROW INDEX. A NEW ROW HAS BEEN ADDED IN THE DATABASE. ADD A NEW ROW TO THE TABLE TO ACCOMODATE
+							        var newRowHtml = '<tr id="' + databaseRow.TransferBatchId + '"><td class="batch-title ' + databaseRow.TransferBatchId + '"><a href="/TransferBatch/' + databaseRow.TransferBatchId + '">' + databaseRow.Title + '</a></td><td class="batch-status ' + databaseRow.TransferBatchId + ' ' + databaseRow.StatusCss + '">' + databaseRow.StatusText + '</td><td class="batch-icon ' + databaseRow.TransferBatchId + '">' + (databaseRow.StatusText == "Processing" ? '<img src="~/Images/spinner-small.gif" />' : '') + '</td></tr>';
+							        $(newRowHtml).insertBefore($(displayedRow));
+							        iDatabase++;
+							    } else if (databaseRow.TransferBatchId > displayedRowId) { // DATABASE HAS A LOWER ID NUMBER FOR THIS ROW INDEX. A ROW HAS BEEN REMOVED IN THE DATABASE. REMOVE ROW HERE TO ACCOMODATE. (THIS SHOULD NEVER HAPPEN)
+
+							    }
+
+							}
+                        }
+                       	setTimeout("refreshStatus()", 4000);
+					}
+                }
+            });
+        }
+
+	</script>
+}

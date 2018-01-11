@@ -1,0 +1,73 @@
+﻿@model RingClone.Portal.Models.SimpleAutomationModel
+@section style {
+    <style>
+        .message-container {
+            min-height: 150px;
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .validating img {
+            padding-top: 18px;
+        }
+    </style>
+}
+@Html.BootstrapValidationMessage("")
+<h2 class="">Validating Your Amazon Keys...</h2>
+<p><span class="small">Hold on just a sec...</span></p>
+<div class="col-md-3"></div>
+<div class="col-md-6">
+    <div class="message-container">
+        <div class="validating">Give us just a moment. We are making sure we can connect to your Amazon account using the keys you provided.<p><img src="~/Images/spinner-large.gif" /></p></div>
+        <div class="validate-success" style="display:none;"><h3>All Good!</h3> We validated your keys against the Amazon server. Click "Next" below to finalize your transfer.</div>
+        <div class="validate-failure" style="display:none;"><h3>Oops</h3> We were unable to validate your Amazon account using the credentials you provided. Click the "Go Back" button and try entering your Amazon IAM credentials again. If the problem persists, reach out to us.</div>
+    </div>
+    <div class="row nav">
+        @using (Html.BeginForm("ValidateAmazon", "SimpleAutomation", FormMethod.Post, new { @class = "form-horizontal" }))
+        {
+            @Html.AntiForgeryToken()
+            <div class="col-md-3">
+                <a href="@Url.Action("UseAmazon")" class="btn btn-lg btn-default btn-block">Go Back</a>
+            </div>
+            <div class="col-md-6">
+            </div>
+            <div class="col-md-3">
+                <button class="btn btn-lg btn-primary btn-block" type="submit">Next</button>
+            </div>
+            <input type="hidden" name="Validated" value="false" />
+            <input type="hidden" name="DisplayName" value="false" />
+        }
+    </div>
+</div>
+<div class="col-md-3"></div>
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('.row.nav button').prop("disabled",true);
+            validateAmazon();
+        });
+        function validateAmazon() {
+            $.ajax({
+                type: "GET",
+                url: "/api/amazon/validate",
+                data: {AccessKeyId: "@Model.AmazonAccessKeyId",SecretAccessKey: "@Model.AmazonSecretAccessKey"},
+                success: function (obj) {
+                    $('.validating').hide();
+                    if (obj.Validated) {
+                        $('.validate-success').show();
+                        $('.row.nav button').prop("disabled", false);
+                        $('input[name=Validated]').val(true);
+                        $('input[name=DisplayName]').val(obj.DisplayName);
+                    } else {
+                        $('.validate-failure').show();
+                    }
+                },
+                error: function () {
+                    $('.validating').hide();
+                    $('.validate-failure').show();
+                }
+            });
+        }
+    </script>
+
+}

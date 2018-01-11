@@ -1,0 +1,263 @@
+﻿@model RingClone.Portal.Models.SimpleAutomationModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Automatic Archiving</h2>
+<label class="switch">
+    <input type="checkbox" id="automationActive" @if (Model.ActiveInd) {<text>checked</text>} />
+    <div class="slider"></div>
+</label>
+<div class="panel panel-primary simple-automation">
+    <div class="panel-body">
+        <form>
+            <div class="form-group">
+                <label>Frequency</label>
+                <span class="form-control">@Model.Frequency</span>
+            </div>
+            <div class="form-group">
+                <label>Time of day</label>
+                <span class="form-control">@Model.TimeOfDay</span>
+            </div>
+            <div class="form-group">
+                <label>Destination <a href="@Url.Action("SelectDestination", new { TransferRuleId = Model.TransferRuleId })">change</a></label>
+                <span class="form-control">@Model.Destination</span>
+            </div>
+            <div class="form-group">
+                <label>Folder <a href="@Url.Action("use" + Model.Destination, new { TransferRuleId = Model.TransferRuleId })">change</a></label>
+                <span class="form-control">@Model.DestinationFolderLabel</span>
+            </div>
+            <div class="form-group">
+                <label for="putInDatedSubfolder">Put in dated sub-folder</label>
+                <input type="checkbox" id="putInDatedSubfolder" name="PutInDatedSubfolder" @if (Model.PutInDatedSubFolder) {<text>checked</text>} />
+            </div>
+            <div class="form-group types">
+                <label>Type(s)</label>
+                <ul>
+                    <li>
+                        <label for="voiceLogInd">Voice Log:</label><input type="checkbox" id="voiceLogInd" name="VoiceLogInd" @if (Model.VoiceLogInd) {<text>checked</text>}>
+                    </li>
+                    <li>
+                        <label for="voiceContentInd">Voice Content:</label><input type="checkbox" id="voiceContentInd" name="VoiceContentInd" @if (Model.VoiceContentInd) {<text>checked</text>}>
+                    </li>
+                    <li>
+                        <label for="faxLogInd">Fax Log:</label><input type="checkbox" id="faxLogInd" name="FaxLogInd" @if (Model.FaxLogInd) {<text>checked</text>}>
+                    </li>
+                    <li>
+                        <label for="faxContentInd">Fax Content:</label><input type="checkbox" id="faxContentInd" name="FaxContentInd" @if (Model.FaxContentInd) {<text>checked</text>}>
+                    </li>
+                    <li>
+                        <label for="smsLogInd">Sms Log:</label><input type="checkbox" id="smsLogInd" name="SmsLogInd" @if (Model.SmsLogInd) {<text>checked</text>}>
+                    </li>
+                    <li>
+                        <label for="smsContentInd">Sms Content:</label><input type="checkbox" id="smsContentInd" name="SmsContentInd" @if (Model.SmsContentInd) {<text>checked</text>}>
+                    </li>
+                </ul>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section style {
+<style>
+/* The switch - the box around the slider */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #00ff90;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #00ff90;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+    input + .slider:after {
+        display:block;
+        margin-left:50px;
+        padding:7px 22px;
+    }
+    input:checked + .slider:after {
+        content:"On";
+    }
+    input:not(:checked) + .slider:after {
+        content:"Off";
+        color:#ccc;
+    }
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+    .panel.simple-automation.disabled {
+        background-color:#f8f8f8;
+    }
+    .panel.simple-automation.disabled .form-group span {
+        background-color:#f8f8f8;
+    }
+    .types label {
+        vertical-align:middle;
+        width:120px;
+        display:inline-block;
+        margin:4px;
+    }
+    .types input {
+        vertical-align:middle;
+        display:inline-block;
+        margin:4px;
+    }
+    .form-group span.form-control {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: block;
+
+    }
+</style>
+}
+
+@section scripts {
+<script>
+    $(document).ready(function () {
+        if (!$('#automationActive').is(":checked")) {
+            $('.panel.simple-automation').addClass("disabled");
+            $('.panel.simple-automation input').prop("disabled", true);
+            $('.panel.simple-automation a').bind('click', function (e) {
+                e.preventDefault();
+            });
+        }
+        $('#automationActive').click(function (e) {
+            if ($(this).is(":checked")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/simpleautomation/on",
+                    success: function (obj) {
+                    }
+                });
+                $('.panel.simple-automation').removeClass("disabled");
+                $('.panel.simple-automation input').prop("disabled", false);
+                $('.panel.simple-automation a').unbind('click');
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/simpleautomation/off",
+                    success: function (obj) {
+                    }
+                });
+                $('.panel.simple-automation').addClass("disabled");
+                $('.panel.simple-automation input').prop("disabled", true);
+                $('.panel.simple-automation a').bind('click', function (e) {
+                    e.preventDefault();
+                });
+            }
+        });
+        $('#putInDatedSubfolder').click(function (e) {
+            if ($(this).is(":checked")) {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/simpleautomation/putindatedsubfolder/on",
+                    success: function (obj) {
+                    }
+                });
+            } else {
+                $.ajax({
+                    type: "POST",
+                    url: "/api/simpleautomation/putindatedsubfolder/off",
+                    success: function (obj) {
+                    }
+                });
+            }
+        });
+        $('#voiceLogInd').click(function (e) {
+            $.ajax({
+                type: "POST",
+                url: "/api/simpleautomation/voicelog/" + ($(this).is(":checked") ? "on" : "off"),
+                success: function (obj) {
+                }
+            });
+        });
+        $('#voiceContentInd').click(function (e) {
+            $.ajax({
+                type: "POST",
+                url: "/api/simpleautomation/voicecontent/" + ($(this).is(":checked") ? "on" : "off"),
+                success: function (obj) {
+                }
+            });
+        });
+        $('#faxLogInd').click(function (e) {
+            $.ajax({
+                type: "POST",
+                url: "/api/simpleautomation/faxlog/" + ($(this).is(":checked") ? "on" : "off"),
+                success: function (obj) {
+                }
+            });
+        });
+        $('#faxContentInd').click(function (e) {
+            $.ajax({
+                type: "POST",
+                url: "/api/simpleautomation/faxcontent/" + ($(this).is(":checked") ? "on" : "off"),
+                success: function (obj) {
+                }
+            });
+        });
+        $('#smsLogInd').click(function (e) {
+            $.ajax({
+                type: "POST",
+                url: "/api/simpleautomation/smslog/" + ($(this).is(":checked") ? "on" : "off"),
+                success: function (obj) {
+                }
+            });
+        });
+        $('#smsContentInd').click(function (e) {
+            $.ajax({
+                type: "POST",
+                url: "/api/simpleautomation/smscontent/" + ($(this).is(":checked") ? "on" : "off"),
+                success: function (obj) {
+                }
+            });
+        });
+    });
+</script>
+
+}

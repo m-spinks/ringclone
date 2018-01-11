@@ -1,0 +1,81 @@
+﻿@model RingClone.Portal.Models.SimpleAutomationModel
+
+@Html.BootstrapValidationMessage("")
+<div class="col-sm-3"></div>
+<div class="col-sm-6">
+@using (Html.BeginForm("SelectLogsAndContent", "SimpleAutomation", FormMethod.Post, new { @class = "form-horizontal" }))
+{
+    @Html.AntiForgeryToken()
+    <h2 class="">Set Up RingClone Automation</h2>
+    <p class="small">Which logs and/or content would you like RingClone to archive?</p>
+    <div class="row">
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="voiceLogInd">Voice Log</label>
+                <input type="checkbox" id="voiceLogInd" name="VoiceLogInd" @if (Model.VoiceLogInd) { <text> checked</text>} />
+            </div>
+            <div class="form-group">
+                <label for="voiceContentInd">Voice Content</label>
+                <input type="checkbox" id="voiceContentInd" name="VoiceContentInd" @if (Model.VoiceContentInd) { <text> checked</text>} />
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="faxLogInd">Fax Log</label>
+                <input type="checkbox" id="faxLogInd" name="FaxLogInd" @if (Model.FaxLogInd) { <text> checked</text>} />
+            </div>
+            <div class="form-group">
+                <label for="faxContentInd">Fax Content</label>
+                <input type="checkbox" id="faxContentInd" name="FaxContentInd" @if (Model.FaxContentInd) { <text> checked</text>} />
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <label for="smsLogInd">Sms Log</label>
+                <input type="checkbox" id="smsLogInd" name="SmsLogInd" @if (Model.SmsLogInd) { <text> checked</text>} />
+            </div>
+            <div class="form-group">
+                <label for="smsContentInd">Sms Content</label>
+                <input type="checkbox" id="smsContentInd" name="SmsContentInd" @if (Model.SmsContentInd) { <text> checked</text>} />
+            </div>
+        </div>
+    </div>
+    <a href="@Url.Action("SelectDestination", "SimpleAutomation")" class="btn btn-primary btn-lg pull-left">Prev</a>
+    <input type="submit" class="btn btn-primary btn-lg pull-right" value="Next" />
+}
+</div>
+<div class="col-sm-3"></div>
+
+@section style {
+	<style>
+		.destinations .btn {
+			white-space:normal;
+		}
+		@@media (min-width: 768px) {
+			.destinations .small {
+				position:absolute;
+				right:-80px;
+				top:0px;
+				width:80px;
+			}
+		}
+		@@media (min-width: 768px) {
+			.destinations .small {
+				color:#00D191;
+			}
+		}
+		@@media (max-width: 767px) {
+			.destinations .small {
+				color:#fff;
+				border-radius:8px;
+				width:auto;
+				font-style:italic;
+			}
+		}
+        .form-group {
+            text-align:right;
+        }
+		.destinations .small {
+		}
+	</style>
+}

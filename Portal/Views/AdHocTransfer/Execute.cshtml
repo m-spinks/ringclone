@@ -1,0 +1,20 @@
+﻿@model RingClone.Portal.Models.AdHocTransferModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class=""></h2>
+<p class="small">You will need to give Box.com permission to accept files from RingClone.</p>
+<p class="small">Click below, and we will direct you to the Box.com authorization page. After you click "Allow", we will then redirect you back here to continue setting up your backup.</p>
+<div class="btn-group-vertical" role="group" aria-label="...">
+	<a href="@Model.BoxUrl" class="btn btn-default">Go To Box.com</a>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            loadFolder(0);
+        });
+        function refreshSummary(transferBatchId) {
+
+        }
+    </script>
+}

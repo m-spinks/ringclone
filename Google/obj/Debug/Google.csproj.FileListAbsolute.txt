@@ -1,0 +1,14 @@
+D:\APD\RingClone\Google\bin\Debug\RingClone.Google.dll
+D:\APD\RingClone\Google\bin\Debug\RingClone.Google.pdb
+D:\APD\RingClone\Google\bin\Debug\FluentNHibernate.dll
+D:\APD\RingClone\Google\bin\Debug\Iesi.Collections.dll
+D:\APD\RingClone\Google\bin\Debug\NHibernate.dll
+D:\APD\RingClone\Google\bin\Debug\RingClone.AppConfig.dll
+D:\APD\RingClone\Google\bin\Debug\RingClone.AppConfig.pdb
+D:\APD\RingClone\Google\bin\Debug\FluentNHibernate.pdb
+D:\APD\RingClone\Google\bin\Debug\FluentNHibernate.xml
+D:\APD\RingClone\Google\bin\Debug\Iesi.Collections.xml
+D:\APD\RingClone\Google\bin\Debug\NHibernate.xml
+D:\APD\RingClone\Google\obj\Debug\Google.csprojResolveAssemblyReference.cache
+D:\APD\RingClone\Google\obj\Debug\RingClone.Google.dll
+D:\APD\RingClone\Google\obj\Debug\RingClone.Google.pdb

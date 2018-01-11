@@ -1,0 +1,14 @@
+D:\APD\RingClone\RingCentral\bin\Release\RingCentral.dll
+D:\APD\RingClone\RingCentral\bin\Release\RingCentral.pdb
+D:\APD\RingClone\RingCentral\bin\Release\FluentNHibernate.dll
+D:\APD\RingClone\RingCentral\bin\Release\Iesi.Collections.dll
+D:\APD\RingClone\RingCentral\bin\Release\NHibernate.dll
+D:\APD\RingClone\RingCentral\bin\Release\RingClone.AppConfig.dll
+D:\APD\RingClone\RingCentral\bin\Release\RingClone.AppConfig.pdb
+D:\APD\RingClone\RingCentral\bin\Release\FluentNHibernate.pdb
+D:\APD\RingClone\RingCentral\bin\Release\FluentNHibernate.xml
+D:\APD\RingClone\RingCentral\bin\Release\Iesi.Collections.xml
+D:\APD\RingClone\RingCentral\bin\Release\NHibernate.xml
+D:\APD\RingClone\RingCentral\obj\Release\RingCentral.csprojResolveAssemblyReference.cache
+D:\APD\RingClone\RingCentral\obj\Release\RingCentral.dll
+D:\APD\RingClone\RingCentral\obj\Release\RingCentral.pdb

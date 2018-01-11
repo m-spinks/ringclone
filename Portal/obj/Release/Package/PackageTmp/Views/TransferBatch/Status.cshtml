@@ -1,0 +1,142 @@
+﻿@model RingClone.Portal.Models.TransferBatchStatusModel
+
+@section style {
+	<style>
+		.queue-message {
+			padding: 6px 6px 6px 16px;
+		}
+		.process-start-message {
+			padding: 6px 6px 6px 32px
+		}
+		.process-stop-message {
+			padding: 6px 6px 6px 32px
+		}
+		.tickets td {
+			padding:6px 6px 6px 6px;
+		}
+		.tickets td.ticket-title {
+			padding-left:48px;
+		}
+		table.tickets {
+			border:none;
+			table-layout:fixed;
+			width:100%;
+		}
+		table.tickets td:not(.ticket-icon) {
+			border-bottom:solid 1px #ddd;
+		}
+		table.tickets tr:first-child td:not(.ticket-icon) {
+			border-top:solid 2px #ddd;
+		}
+		table.tickets tr:last-child td:not(.ticket-icon) {
+			border-bottom:solid 2px #ddd;
+		}
+		.tickets .ticket-title {
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			overflow: hidden;
+		}
+		.tickets .ticket-status {
+			padding-left:16px;
+			padding-right:16px;
+			text-align:center;
+			width:100px;
+		}
+		.tickets .ticket-icon {
+			width:35px;
+			text-align:center;
+		}
+		.ticket-status .queued {
+			background-color:#e2dec8;
+			color:#000;
+			font-weight:normal;
+		}
+		.ticket-status.pending {
+			background-color:#d3cdb0;
+			color:#000;
+			font-weight:normal;
+		}
+		.ticket-status.processing {
+			background-color:#0094ff;
+			color:#fff;
+			font-weight:bold;
+		}
+		.ticket-status.error {
+			background-color:#ff0000;
+			color:#fff;
+			font-weight:bold;
+		}
+		.ticket-status.success {
+			background-color:#3dca00;
+			color:#fff;
+			font-weight:bold;
+		}
+		td.ticket-title img {
+			width:21px;
+		}
+	</style>
+}
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Status of Transfer</h2>
+	<div class="queue-message">@Model.QueueMessage</div>
+	<div class="process-start-message">@Model.ProcessStartMessage</div>
+	<table class="table-responsive tickets">
+		<tbody>
+			@foreach (var call in Model.Tickets)
+			{
+				<tr>
+					<td class="ticket-title @call.TicketId">@Html.Raw(call.Title)</td>
+					<td class="ticket-status @call.TicketId @call.StatusCss">@call.StatusText</td>
+					<td class="ticket-icon @call.TicketId">
+						@if (call.StatusText == "Processing")
+						{
+							<img src="@call.StatusIcon" />
+						}
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+	<div class="process-stop-message">@Model.ProcessStopMessage</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            $('.status').mask("Loading...");
+            refreshStatus();
+        });
+        function refreshStatus() {
+            $.ajax({
+                url: "/api/transferbatch/status/@Model.TransferBatchId",
+                complete: function () {
+                    $('.status').unmask();
+                },
+                success: function (result) {
+                    if (result) {
+                    	$('.batch-title').html(result.Title);
+                    	$('.queue-message').html(result.QueueMessage);
+                    	$('.process-start-message').html(result.ProcessStartMessage);
+                        if (result.Tickets) {
+                            for (var i in result.Tickets) {
+                                var ticket = result.Tickets[i];
+                                $('.ticket-title.' + ticket.TicketId).html(ticket.Title);
+                                $('.ticket-status.' + ticket.TicketId).html(ticket.StatusText);
+                                $('.ticket-status.' + ticket.TicketId).addClass(ticket.StatusCss);
+                                if (ticket.StatusText == "Processing") {
+                                	$('.ticket-icon.' + ticket.TicketId).html("<img src='" + ticket.StatusIcon + "' />");
+                                } else {
+                                	$('.ticket-icon.' + ticket.TicketId).html("");
+                                }
+                            }
+                        }
+                        $('.process-stop-message').html(result.ProcessStopMessage);
+                        if (result.StatusText != "Success" && result.StatusText != "Error") {
+                        	setTimeout("refreshStatus()", 3000);
+                        }
+					}
+                }
+            });
+        }
+    </script>
+}

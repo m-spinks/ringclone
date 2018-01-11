@@ -1,0 +1,29 @@
+﻿@{Layout = "~/Views/Shared/_Layout.cshtml";}
+@model System.Web.Mvc.HandleErrorInfo
+@section style {
+    <style>
+        .content {
+            margin: 24px 0px 48px 0px;
+        }
+    </style>
+}
+
+        <div class="col-lg-3 col-md-2"></div>
+        <div class="col-lg-6 col-md-8">
+            <div class="row">
+                <div class="col-xs-6 logo">
+                    <img src="@Url.Content("~/images/header-logo.svg")" class="img img-responsive" />
+                </div>
+                <hgroup class="title">
+                    <h2 class="error">Oops, something Just Went Wrong</h2>
+                </hgroup>
+            </div>
+            <div class="row">
+                <div class="content">
+                    <p class="error">Sorry, something unexpected just happened. We will be looking into the issue immediately.</p>
+                    <p>We try our best to minimize these kinds of errors, but sometimes the unexpected happens. Sorry for the inconvenience.</p>
+                    <p>Please try your request again. If the problem happens again, please <a href="#" data-toggle="modal" data-target=".help">reach out to RingClone support</a>.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-2"></div>

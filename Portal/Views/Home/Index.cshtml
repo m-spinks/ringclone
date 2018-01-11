@@ -1,0 +1,37 @@
+﻿@{Layout = "~/Views/Shared/_LayoutPublic.cshtml";}
+
+<style>
+	@@media (min-width: 992px) {
+		h4 {
+			min-height:48px;
+			vertical-align:bottom;
+		}
+	}
+	.img-responsive {
+		margin:auto;
+	}
+</style>
+
+<section>
+	<div class="row">
+		<div class="col-md-3">
+
+		</div>
+		<div class="col-md-6">
+			<div class="">
+				<img src="images/front-page-logo.png" class="img img-responsive" />
+			</div>
+				<div class="col-md-6">
+					<h4>Have you already set up your file transfers?</h4>
+					<a href="@Url.Action("Login", "Account")" class="btn btn-primary btn-lg btn-block">Click here to login</a>
+				</div>
+				<div class="col-md-6">
+					<h4>New to this file transferring service?</h4>
+					<a href="@Url.Action("Register", "Account")" class="btn btn-primary btn-lg btn-block">Click here to register</a>
+				</div>
+		</div>
+		<div class="col-md-3">
+
+		</div>
+	</div>
+</section>

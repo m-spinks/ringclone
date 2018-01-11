@@ -1,0 +1,211 @@
+﻿@model RingClone.Portal.Models.AdHocTransferModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Choose an Amazon Bucket/Folder</h2>
+<p class="small">Select a bucket and/or folder in your amazon account to store your RingCentral files in</p>
+
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8 explorer">
+		<div id="amazonBreadcrumbs"><ul class="breadcrumb"></ul></div>
+        <div id="amazonUseThisFolder" class="use-this-folder"></div>
+        <div id="amazonAdditionalMessage" class="additional-message small"></div>
+        <div id="amazonExplorer" class="btn-group-vertical btn-block"></div>
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+@section style {
+<style>
+	p.small {
+		margin-bottom:0px;
+	}
+	.explorer {
+		min-height:150px;
+		padding-top:12px;
+        margin-top:8px;
+	}
+    #amazonUseThisFolder {
+        text-align:center;
+		margin-bottom:18px;
+    }
+    #amazonUseThisFolder .btn {
+        padding:24px;
+    }
+    #amazonAdditionalMessage {
+        padding-bottom:6px;
+    }
+	.amazon-folder img {
+		text-align:left;
+		vertical-align:middle;
+		margin-right:8px;
+	}
+    .amazon-file img {
+		text-align:left;
+		vertical-align:middle;
+		margin-right:8px;
+    }
+	.input-group.amazon-folder .folder-name,
+	.input-group.amazon-file .file-name {
+		border: solid 1px #cccccc;
+		min-height: 46px;
+		padding:6px 14px 4px 14px;
+		width:100%;
+		text-align:left;
+		background-color:#fff;
+		cursor:default;
+	}
+	.input-group.amazon-folder .folder-name:hover {
+		background-color:#f0f0f0;
+	}
+	.input-group.amazon-folder:not(:first-child) .folder-name,
+	.input-group.amazon-file:not(:first-child) .file-name {
+		border-top: none;
+	}
+	.input-group.amazon-folder:not(:first-child) .input-group-btn .btn,
+	.input-group.amazon-file:not(:first-child) .input-group-btn .btn {
+		border-top: none;
+	}
+	.input-group.amazon-folder .input-group-btn .btn,
+	.input-group.amazon-file .input-group-btn .btn {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+	.input-group.amazon-file .file-name {
+        border-color:#e8e8e8;
+	}
+	.input-group.amazon-file,
+	.input-group.amazon-file .file-name {
+        font-weight:bold;
+        color: #22aaff;
+        width:100%;
+    }
+
+	.breadcrumb {
+		margin-top:0px;
+		margin-bottom:0px;
+		min-height:36px;
+	}
+	div#amazonBreadcrumbs {
+		margin-bottom:24px;
+	}
+    #amazonBreadcrumbs img {
+        width:15px;
+    }
+    #amazonBreadcrumbs li, #amazonBreadcrumbs li * {
+        vertical-align:middle;
+    }
+</style>
+}
+
+@section scripts {
+<script>
+    var breadcrumbs = [];
+	$(document).ready(function () {
+		loadFolder("", "");
+	});
+	function loadFolder(path, name) {
+		$('.explorer').mask("Loading...");
+		$.ajax({
+			url: "/api/amazonexplorer/folder?AmazonAccountId=@Model.AmazonAccountId&path=" + path,
+			complete: function() {
+				$('.explorer').unmask();
+			},
+			success: function (result) {
+			    //BUILD FOLDER AND FILE LIST
+			    $('#amazonExplorer').html('');
+			    if (result) {
+			        //THIS FOLDER
+			        if (result.CanUseFolder) {
+			            var paramsForThisFolder = [
+                            { name: "FolderName", value: result.FolderName },
+                            { name: "OwnerName", value: result.OwnerName },
+                            { name: "BucketName", value: result.BucketName },
+                            { name: "Key", value: result.Key }
+			            ];
+			            var queryStringForThisFolder = $.param(paramsForThisFolder);
+			            var useThisFolderLabel = 'Use this folder';
+			            if (!result.Key) {
+			                useThisFolderLabel = 'Store files at the <u>root</u> of this bucket';
+			                $('#amazonAdditionalMessage').html('or drill down and select a folder below...');
+                        } else {
+			                $('#amazonAdditionalMessage').html('');
+			            }
+			            $('#amazonUseThisFolder').html('<a class="btn btn-primary btn-lg" type="button" href="ChooseAmazonFolderClick?' + queryStringForThisFolder + '">' + useThisFolderLabel + ' (<strong>' + result.FolderName + '</strong>)</a>');
+			        }
+				    //BUILD CHILD FOLDERS
+				    if (result.ChildFolders) {
+				        for (var i in result.ChildFolders) {
+				            var f = result.ChildFolders[i];
+				            if (f.CanUseFolder) {
+				                var params = [
+                                    { name: "FolderName", value: f.FolderName },
+                                    { name: "OwnerName", value: f.OwnerName },
+                                    { name: "BucketName", value: f.BucketName },
+                                    { name: "Key", value: f.Key }
+				                ]
+				                var queryString = $.param(params);
+				                var imageFile = "folder.svg";
+				                var label = "folder";
+				                if (f.FolderType == 'bucket') {
+				                    imageFile = 'bucket.svg';
+				                    label = 'bucket';
+                                }
+				                $('#amazonExplorer').append(
+    '<div class="input-group input-group-lg amazon-folder">' +
+    '	<button class="folder-name" onclick="clickFolder(\'' + f.FolderPath + '\')"><img src="/images/' + imageFile + '" />' + f.FolderName + '</button>' +
+    '	<span class="input-group-btn">' +
+    '		<a class="btn btn-default" type="button" href="ChooseAmazonFolderClick?' + queryString + '">Use this ' + label + '</a>' +
+    '	</span>' +
+    '</div>'
+                                );
+				            }
+						}
+					}
+					if (result.ChildFiles) {
+						for (var i in result.ChildFiles) {
+							var f = result.ChildFiles[i];
+							$('#amazonExplorer').append(
+'<div class="input-group input-group-lg amazon-file">' +
+'	<div class="file-name"><img src="/images/file.svg" />' + f.FileName + '</div>' +
+'</div>'
+							);
+							//$('#amazonExplorer').append('<div class="amazon-file"><img src="/images/file.svg" /></div>' + f.FileName + '</div>');
+						}
+					}
+			        //BUILD BREADCRUMBS
+					$('#amazonBreadcrumbs ul').html('');
+					var breadcrumbItems = "";
+					if (result.Breadcrumbs) {
+					    var folderId = "";
+					    var folderName = "";
+					    var count = 0;
+					    for (var i in result.Breadcrumbs) {
+					        var f = result.Breadcrumbs[i];
+					        var imageFile = "";
+					        if (f.FolderType == 'bucket') {
+					            imageFile = '<img src="/images/bucket.svg" />';
+					        } else if (f.FolderType == "owner") {
+					            imageFile = '<img src="/images/user.svg" />';
+					        }
+					        if (result.Breadcrumbs.length == 1)
+					            breadcrumbItems += '<li>' + imageFile + '<a href="#" onclick="clickBreadcrumb(\'' + f.FolderPath + '\')">' + f.FolderName + '</a> <span>(owner)</span></li>';
+					        else
+					            breadcrumbItems += '<li>' + imageFile + '<a href="#" onclick="clickBreadcrumb(\'' + f.FolderPath + '\')">' + f.FolderName + '</a></li>';
+                            count++;
+					    }
+					    $('#amazonBreadcrumbs').html('<ul class="breadcrumb">' + breadcrumbItems + '</ul>');
+					}
+                }
+			}
+		});
+	}
+	function clickFolder(path) {
+		loadFolder(path);
+	}
+	function clickFile(id) {
+	}
+	function clickBreadcrumb(path) {
+		loadFolder(path);
+	}
+</script>}

@@ -1,0 +1,90 @@
+﻿@model RingClone.Portal.Models.AdHocTransferModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Confirm Your File Transfer</h2>
+<p class="small">Verify that the information below is correct and click "Confirm and Transfer" below</p>
+
+<div class="row">
+    <div class="col-sm-4">
+        <h3>Transferring these files</h3>
+        <div class="selected-calls">
+            @Model.ArchiveDescription
+        </div>
+    </div>
+    <div class="col-sm-4">
+        @if (Model.Destination == RingClone.Portal.Models.AdHocTransferModel.DestinationType.Box)
+        {
+            <text>
+            <h3>To My Box Account</h3>
+            <div class=""><strong>@Model.BoxEmail</strong></div>
+            </text>
+        }
+        else if (Model.Destination == RingClone.Portal.Models.AdHocTransferModel.DestinationType.Google)
+        {
+            <text>
+            <h3>To My Google Account</h3>
+        <div class=""><strong>@Model.GoogleEmail</strong></div>
+            </text>
+        }
+        else if (Model.Destination == RingClone.Portal.Models.AdHocTransferModel.DestinationType.Amazon)
+        {
+            <text>
+                <h3>To My Amazon Account</h3>
+                <div class=""><strong>@Model.AmazonDisplayName</strong></div>
+            </text>
+        }
+        else if (Model.Destination == RingClone.Portal.Models.AdHocTransferModel.DestinationType.Ftp)
+        {
+            <text>
+            <h3>To My Ftp Account</h3>
+            </text>
+        }
+    </div>
+    <div class="col-sm-4">
+        <h3>
+            And Into This Folder:
+        </h3>
+        <div class="">
+        @if (Model.Destination == RingClone.Portal.Models.AdHocTransferModel.DestinationType.Amazon)
+        {
+            <text>
+            <div>
+                <label>Bucket:</label> @Model.DestinationBucketName
+            </div>
+            <div>
+                <label>Folder:</label> @Model.DestinationPrefix
+            </div>
+            </text>
+        }
+        else
+        {
+            <text>
+            @Model.DestinationFolderPath\<strong>@Model.DestinationFolderName</strong>
+            </text>
+        }
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+        <a href="@Url.Action("Execute")" class="btn btn-primary btn-block btn-lg">Confirm and Transfer</a>
+    </div>
+    <div class="col-sm-3"></div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+}
+
+@section style {
+    <style>
+        .row .btn-lg {
+            margin-top: 28px;
+        }
+    </style>
+}

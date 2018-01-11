@@ -1,0 +1,63 @@
+﻿@{Layout = "~/Views/Shared/_LayoutPublic.cshtml";}
+@model System.Web.Mvc.HandleErrorInfo
+@section style {
+    <style>
+        .content {
+            margin: 24px 0px 48px 0px;
+        }
+    </style>
+}
+
+<div class="container">
+    <div class="row page-header">
+        <div class="col-lg-3 col-md-2"></div>
+        <div class="col-lg-6 col-md-8">
+            <div class="row">
+                <div class="col-xs-6 logo">
+                    <img src="@Url.Content("~/images/header-logo.svg")" class="img img-responsive" />
+                </div>
+                <hgroup class="title">
+                    <h2 class="error">Oops, something Just Went Wrong</h2>
+                </hgroup>
+            </div>
+            <div class="row">
+                <div class="content">
+                    <p class="error">Sorry, something unexpected just happened. We will be looking into the issue immediately.</p>
+                    <p>We try our best to minimize these kinds of errors, but sometimes the unexpected happens. Sorry for the inconvenience.</p>
+                    <p>Please try your request again. If the problem happens again, please <a href="#" data-toggle="modal" data-target=".help">reach out to RingClone support</a>.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-2"></div>
+    </div>
+</div>
+
+<div class="modal help" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>We're Here For You!</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do you have a question? A comment? A suggestion? Let us know below, and we'll get back to you as soon as possible.
+                </p>
+                <p>
+                    Are you experiencing issues or recieving an error message? If so, can you give us a brief description of what is going on? We'll figure out the problem and get back with you as soon as we can.
+                </p>
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-control" rows="5" id="helpMessage" maxlength="1000"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Email</label>
+                    <input type="text" class="form-control" maxlength="500" id="helpContactEmail" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <btn class="btn btn-primary pull-left" data-dismiss="modal" data-target=".help">Cancel</btn>
+                <btn class="btn btn-primary pull-right" id="helpSubmitButton">Submit</btn>
+            </div>
+        </div>
+    </div>
+</div>

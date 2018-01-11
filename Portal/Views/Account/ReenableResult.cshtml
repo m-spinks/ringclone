@@ -1,0 +1,25 @@
+﻿@model RingClone.Portal.Models.ReenableModel
+<style>
+	.plan-title {
+		font-weight:bold;
+		font-size:2.25em;
+	}
+	#changePlanForm {
+		text-align:center;
+	}
+	.plan {
+		padding:24px 6px;
+	}
+</style>
+<div class="col-sm-3"></div>
+<div class="col-sm-6">
+    <div id="changePlanForm">
+        <h2>Your plan has been re-activated</h2>
+        @Html.BootstrapValidationMessage("")
+        @{ var plan = RingClone.Portal.Helpers.SubscriptionHelper.SubscriptionPlans.Where(x => x.Id == Model.NewPlanId).First(); }
+		<p>You are now subscribed to the</p>
+		<p class="plan-title plan @plan.Id">@plan.MarketingTitle</p>
+		<a href="@Url.Action("Index", "Log")" class="btn btn-primary btn-block">Continue</a>
+    </div>
+</div>
+<div class="col-sm-3"></div>

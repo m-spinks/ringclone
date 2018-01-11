@@ -1,0 +1,73 @@
+﻿@{Layout = "~/Views/Shared/_LayoutPublic.cshtml";}
+
+@section style {
+    <style>
+        .content {
+            margin:24px 0px 48px 0px;
+        }
+    </style>
+}
+
+    <div class="container">
+        <div class="row page-header">
+            <div class="col-lg-3 col-md-2"></div>
+            <div class="col-lg-6 col-md-8">
+                <div class="row">
+                    <div class="col-xs-6 logo">
+                        <img src="@Url.Content("~/images/header-logo.svg")" class="img img-responsive" />
+                    </div>
+                    <hgroup class="title">
+                        <h2 class="error">The page expired</h2>
+                    </hgroup>
+                </div>
+                <div class="row">
+                    <div class="content">
+                        <p class="error">For security reasons, you will need to log in again. Click below to log in again.</p>
+                        <p>If the problem happens again, please <a href="#" data-toggle="modal" data-target=".help">reach out to RingClone support</a>.</p>
+                    </div>
+                    <div class="col-xs-3"></div>
+                    <form action="@RingCentral.Config.AuthUrl" method="GET" class="col-xs-6">
+                        <p>
+                            <input type="hidden" name="response_type" value="code" />
+                            <input type="hidden" name="client_id" value="@RingCentral.Config.AppKey" />
+                            <input type="hidden" name="redirect_uri" value="@RingCentral.Config.RedirectUri" />
+                            <input type="hidden" name="state" value="@HttpUtility.UrlEncode(ViewBag.state)" />
+                            <button type="submit" class="btn btn-block btn-primary">Login</button>
+                        </p>
+                    </form>
+                    <div class="col-xs-3"></div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-2"></div>
+        </div>
+    </div>
+
+<div class="modal help" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>We're Here For You!</h3>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Do you have a question? A comment? A suggestion? Let us know below, and we'll get back to you as soon as possible.
+                </p>
+                <p>
+                    Are you experiencing issues or recieving an error message? If so, can you give us a brief description of what is going on? We'll figure out the problem and get back with you as soon as we can.
+                </p>
+                <div class="form-group">
+                    <label class="form-label">Message</label>
+                    <textarea class="form-control" rows="5" id="helpMessage" maxlength="1000"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Contact Email</label>
+                    <input type="text" class="form-control" maxlength="500" id="helpContactEmail" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <btn class="btn btn-primary pull-left" data-dismiss="modal" data-target=".help">Cancel</btn>
+                <btn class="btn btn-primary pull-right" id="helpSubmitButton">Submit</btn>
+            </div>
+        </div>
+    </div>
+</div>

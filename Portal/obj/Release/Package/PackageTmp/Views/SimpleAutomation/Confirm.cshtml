@@ -1,0 +1,108 @@
+﻿@model RingClone.Portal.Models.SimpleAutomationModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Confirm Your Automation Settings</h2>
+<p class="small">Verify that the information below is correct and click "Confirm" below</p>
+
+<div class="row">
+	<div class="col-sm-4">
+		<h3>RingClone Will Run Every Day at 2:00am CST</h3>
+		<ul>
+            @if (Model.VoiceLogInd)
+            { <text>
+                <li>Voice logs</li></text>}
+            @if (Model.VoiceContentInd)
+            { <text>
+                <li>Recorded calls and voicemails</li></text>}
+            @if (Model.FaxLogInd)
+            { <text>
+                <li>Fax logs</li></text>}
+            @if (Model.FaxContentInd)
+            { <text>
+                <li>Faxes and attachments</li></text>}
+            @if (Model.SmsLogInd)
+            { <text>
+                <li>Texting/SMS logs</li></text>}
+            @if (Model.SmsContentInd)
+            { <text>
+                <li>Texting content and conversations</li></text>}
+		</ul>
+		will be saved to permanent storage...
+	</div>
+    <div class="col-sm-4">
+        @if (Model.Destination == "box")
+        {
+            <text>
+            <h3>Files Will Be Stored in my Box Account</h3>
+            <div class=""><strong>@Model.BoxEmail</strong></div>
+            </text>
+        }
+        else if (Model.Destination == "google")
+        {
+            <text>
+                <h3>Files Will Be Stored in my Google Account</h3>
+                <div class=""><strong>@Model.GoogleEmail</strong></div>
+            </text>
+        }
+        else if (Model.Destination == "amazon")
+        {
+            <text>
+                <h3>Files Will Be Stored in my Amazon Account</h3>
+                <div class=""><strong>@Model.AmazonDisplayName</strong></div>
+            </text>
+        }
+        else if (Model.Destination == "ftp")
+        {
+            <text>
+            <h3>Files Will Be Stored in my Ftp Account</h3>
+            </text>
+        }
+    </div>
+    <div class="col-sm-4">
+        <h3>
+            And In This Folder:
+        </h3>
+        <p class="">
+            @if (Model.Destination == "amazon")
+            {
+                <text>
+                    <div>
+                        <label>Bucket:</label> @Model.DestinationBucketName
+                    </div>
+                    <div>
+                        <label>Folder:</label> @Model.DestinationPrefix
+                    </div>
+                </text>
+            }
+            else
+            {
+                <text>
+                    @Model.DestinationFolderPath
+                </text>
+            }
+        </p>
+		@if (Model.PutInDatedSubFolder)
+		{
+			<p>Additionally, RingClone will save the files in a dated sub folder (YYYYMM)</p>
+		}
+    </div>
+</div>
+<div class="row">
+    <div class="col-sm-3"></div>
+    <div class="col-sm-6">
+		@using (Html.BeginForm("Confirm", "SimpleAutomation", FormMethod.Post, new { id = "logoffForm" }))
+        {
+            <a href="@Url.Action("PutInDatedSubfolder", "SimpleAutomation")" class="btn btn-primary btn-lg pull-left">Prev</a>
+            <input type="submit" class="btn btn-primary btn-lg pull-right" value="Confirm" />
+		}
+    </div>
+    <div class="col-sm-3"></div>
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+
+        });
+    </script>
+}

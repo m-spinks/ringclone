@@ -1,0 +1,361 @@
+﻿@model RingClone.Portal.Models.ConnectionsModel
+
+@section style {
+<style>
+		.settings {
+			margin-bottom: 0px;
+		}
+
+		.settings .prop {
+			padding: 0px 0px 8px 0px;
+		}
+		.settings .prop .key {
+			font-weight:bold;
+		}
+		.settings .prop .value {
+			max-width:220px;
+		}
+
+		.settings .key {
+			display: inline-block;
+			width: 90px;
+		}
+
+		.settings .value {
+			display: inline-block;
+		}
+        table.history {
+            font-size:.85em;
+        }
+		.table.history td {
+			padding: 2px;
+            border-color:#f0f0f0;
+		}
+		.table.history tr:last-child td {
+            border-bottom:solid 1px #f0f0f0;
+		}
+		table.history {
+			border: none;
+			table-layout: fixed;
+			width: 100%;
+		}
+		.history td.batch-status {
+			text-align: center;
+			width: 11px;
+		}
+		.history div.batch-status {
+			text-align: center;
+			width: 8px;
+            font-size:.5em;
+            border-radius:12px;
+            margin-top:5px;
+		}
+		.table.history .batch-icon {
+			width: 21px;
+            padding-left:8px;
+			text-align: center;
+		}
+
+		.batch-status.queued {
+			background-color: #e2dec8;
+			color: #000;
+			font-weight: normal;
+		}
+
+		.batch-status.pending {
+			background-color: #d3cdb0;
+			color: #000;
+			font-weight: normal;
+		}
+
+		.batch-status.processing {
+			background-color: #0094ff;
+			color: #fff;
+			font-weight: bold;
+		}
+
+		.batch-status.error {
+			background-color: #ff0000;
+			color: #fff;
+			font-weight: bold;
+		}
+
+		.batch-status.success {
+			background-color: #3dca00;
+			color: #fff;
+			font-weight: bold;
+		}
+		.history span.log-number {
+            display:none;
+		}
+		.history span.create-time {
+            display:none;
+		}
+		.history span.total-tickets {
+            padding-left:4px;
+		}
+
+		/* MAIN COLUMNS */
+		.recent-transfers {
+			background-color:#f8f8f8;
+			border:solid 1px #e8e8e8;
+			padding:4px 8px;
+		}
+        @@media (min-width: 768px) {
+			.box-column .panel,
+			.ring-central-column .panel {
+				min-height:412px;
+			}
+        }
+		@@media (min-width: 992px) {
+			.dashboard-title {
+				padding:0px;
+			}
+		    .recent-transfers {
+			    min-height:400px;
+		    }
+            div.history {
+			    min-height:320px;
+            }
+	        .panel-primary {
+		        min-height: 350px;
+	        }
+			.ring-central-column {
+				padding:4px 8px 4px 0px;
+			}
+			.box-column,
+			.google-column {
+				padding:4px 8px 4px 0px;
+			}
+			.aside {
+				padding:4px 0px 4px 0px;
+			}
+		}
+
+		.panel-body.box-account,
+		.panel-body.google-account,
+		.panel-body.amazon-account {
+			border:solid 1px #808080;
+			padding:8px;
+			margin:12px;
+			font-size:.85em;
+		}
+    </style>
+}
+
+<div class="row">
+
+	<div class="col-md-12 dashboard-title">
+		<h2>Connections</h2>
+		<span class="small">Quick health check</span>
+	</div>
+
+	<div class="col-md-6 ring-central-column">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title">RingCentral Account</h3>
+			</div>
+			<div class="panel-body">
+				<p><strong>Settings:</strong></p>
+				<div class="settings">
+					<div class="prop">
+						<div class="key">Name:</div>
+						<div class="value">@Model.DisplayName</div>
+					</div>
+					<div class="prop">
+						<div class="key">Company:</div>
+						<div class="value">@Model.Company</div>
+					</div>
+				</div>
+				<p><strong>Connection:</strong></p>
+				<p class="ring-central-connection"><img src="@Url.Content("~/images/spinner-small.gif")" /> <span class="label label-primary">checking...</span></p>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6 box-column">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h3 class="panel-title">Destinations</h3>
+			</div>
+			@if (Model.CompleteDestinations == null || !Model.CompleteDestinations.Any())
+			{
+				<div class="panel-body">
+					<strong>You don't have any destinations set up</strong>
+				</div>
+			}
+			else
+			{
+				foreach (var dest in Model.CompleteDestinations)
+				{
+					<div class="panel-body @dest.DestinationType-account">
+						<div class="settings">
+							<div class="prop">
+								<div class="key">@dest.DestinationTitle:</div>
+								<div class="value @dest.DestinationType-account-email"><img src="@Url.Content("~/images/spinner-small.gif")" /> <span class="label label-primary">checking...</span></div>
+							</div>
+							<div class="prop">
+								<div class="key">Connection:</div>
+								<div class="value @dest.DestinationType-account-connection"><img src="@Url.Content("~/images/spinner-small.gif")" /> <span class="label label-primary">checking...</span></div>
+							</div>
+						</div>
+						<a href="/@dest.DestinationType/setup" class="setup-@dest.DestinationType-account btn btn-danger btn-block" style="display:none;">Set up your @dest.DestinationType account here</a>
+						<a href="/@dest.DestinationType/setup" class="change-@dest.DestinationType-account btn btn-default btn-block" style="display:none;">Switch to a different @dest.DestinationType account</a>
+                        <a href="/@dest.DestinationType/setup" class="update-@dest.DestinationType-account btn btn-default btn-block" style="display:none;">Make a change to your @dest.DestinationType account</a>
+					</div>
+				}
+			}
+			@if (Model.IncompleteDestinations.Any())
+			{
+				<div class="panel-body">
+					<div class="btn-group">
+						<button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Set up a new destination... <span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu">
+							@foreach (var dest in Model.IncompleteDestinations)
+							{
+								<li><a href="/@dest.DestinationType/setup">@dest.DestinationTitle</a></li>
+							}
+						</ul>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+
+</div>
+
+@section scripts {
+
+	<script>
+        $(document).ready(function () {
+            $('.recent-transfers').mask("Loading...");
+            @if (Model.CompleteDestinations.Any(x => x.DestinationType == "box"))
+            {
+                 <text>checkBoxAccount();</text>
+            }
+            @if (Model.CompleteDestinations.Any(x => x.DestinationType == "google"))
+            {
+                 <text>checkGoogleAccount();</text>
+            }
+            @if (Model.CompleteDestinations.Any(x => x.DestinationType == "amazon"))
+            {
+                 <text>checkAmazonAccount();</text>
+            }
+			checkRingCentralAccount();
+        });
+		function checkBoxAccount() {
+			$.ajax({
+				type: "GET",
+				url: "/api/box/accountinfo",
+				success: function (obj) {
+				    $('.box-account-email').html(obj.BoxAccountEmail);
+				    if (obj.HasBoxAccount)
+				        if (obj.AbleToConnectToBoxAccount) {
+				            $('.box-account-connection').html('<div class="alert alert-success" role="alert"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong>All Good:</strong> We successfully connected to your Box account.</div>');
+				            $('.btn.setup-box-account').hide();
+				            $('.btn.change-box-account').show();
+                        }
+                        else {
+                            $('.box-account-connection').html('<div class="alert alert-warning" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> You\'ve set up your box account with us, but we had a problem connecting to your box account.</div>');
+                            $('.btn.setup-box-account').show();
+                            $('.btn.change-box-account').hide();
+                        }
+				    else {
+				        $('.box-account-connection').html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> You haven\'t configured your box account with us yet. Click below to set up your Box account.</div>');
+				        $('.btn.setup-box-account').show();
+				        $('.btn.change-box-account').hide();
+                    }
+				},
+				error: function () {
+				    $('.box-account-email').html('');
+				    $('.box-account-connection').html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> We encountered an error when attempting to connect to your box account.</div>');
+				    $('.btn.setup-box-account').show();
+				    $('.btn.change-box-account').hide();
+				}
+			});
+		}
+		function checkGoogleAccount() {
+		    $.ajax({
+		        type: "GET",
+		        url: "/api/google/accountinfo",
+		        success: function (obj) {
+		            $('.google-account-email').html(obj.GoogleAccountEmail);
+		            if (obj.HasGoogleAccount)
+		                if (obj.AbleToConnectToGoogleAccount) {
+		                    $('.google-account-connection').html('<div class="alert alert-success" role="alert"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong>All Good:</strong> We successfully connected to your Google account.</div>');
+		                    $('.btn.setup-google-account').hide();
+		                    $('.btn.change-google-account').show();
+		                }
+		                else {
+		                    $('.google-account-connection').html('<div class="alert alert-warning" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> You\'ve set up your google account with us, but we had a problem connecting to your google account.</div>');
+		                    $('.btn.setup-google-account').show();
+		                    $('.btn.change-google-account').hide();
+		                }
+		            else {
+		                $('.google-account-connection').html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> You haven\'t configured your google account with us yet. Click below to set up your Google account.</div>');
+		                $('.btn.setup-google-account').show();
+		                $('.btn.change-google-account').hide();
+		            }
+		        },
+		        error: function () {
+		            $('.google-account-email').html('');
+		            $('.google-account-connection').html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> We encountered an error when attempting to connect to your google account.</div>');
+		            $('.btn.setup-google-account').show();
+		            $('.btn.change-google-account').hide();
+		        }
+		    });
+		}
+		function checkAmazonAccount() {
+		    $.ajax({
+		        type: "GET",
+		        url: "/api/amazon/accountinfo",
+		        success: function (obj) {
+		            $('.amazon-account-email').html(obj.DisplayName);
+		            if (obj.HasAmazonAccount)
+		                if (obj.AbleToConnectToAmazonAccount) {
+		                    $('.amazon-account-connection').html('<div class="alert alert-success" role="alert"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong>All Good:</strong> We successfully connected to your Amazon account.</div>');
+		                    $('.btn.setup-amazon-account').hide();
+		                    $('.btn.change-amazon-account').show();
+		                    $('.btn.update-amazon-account').show();
+                        }
+		                else {
+		                    $('.amazon-account-connection').html('<div class="alert alert-warning" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> You\'ve set up your amazon account with us, but we had a problem connecting to your amazon account.</div>');
+		                    $('.btn.setup-amazon-account').show();
+		                    $('.btn.change-amazon-account').hide();
+		                    $('.btn.update-amazon-account').hide();
+                        }
+		            else {
+		                $('.amazon-account-connection').html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> You haven\'t configured your amazon account with us yet. Click below to set up your Amazon account.</div>');
+		                $('.btn.setup-amazon-account').show();
+		                $('.btn.change-amazon-account').hide();
+		                $('.btn.update-amazon-account').hide();
+                    }
+		        },
+		        error: function () {
+		            $('.amazon-account-email').html('');
+		            $('.amazon-account-connection').html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> We encountered an error when attempting to connect to your amazon account.</div>');
+		            $('.btn.setup-amazon-account').show();
+		            $('.btn.change-amazon-account').hide();
+		            $('.btn.update-amazon-account').hide();
+		        }
+		    });
+		}
+		function checkRingCentralAccount() {
+			$.ajax({
+				type: "GET",
+				url: "/api/ringcentral/accountinfo",
+				success: function (obj) {
+					if (obj.CanLogin)
+					    $('.ring-central-connection').html('<div class="alert alert-success" role="alert"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong>All Good:</strong> We successfully connected to your RingCentral account</div>');
+					else
+					    $('.ring-central-connection').html('<div class="alert alert-success" role="alert"><span class="glyphicon glyphicon-ok" aria-hidden="true"></span><strong>All Good:</strong> Unable to connect to your RingCentral account</div>');
+				},
+				error: function () {
+					$('.ring-central-connection').html('<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><strong>Error:</strong> Unable to connect to your RingCentral account</div>');
+				}
+			});
+		}
+	</script>
+
+}

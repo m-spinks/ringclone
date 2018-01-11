@@ -1,0 +1,191 @@
+﻿@model RingClone.Portal.Models.ChangePlanModel
+@{ 
+	var plan = RingClone.Portal.Helpers.SubscriptionHelper.SubscriptionPlans.First(x => x.Id == Model.NewPlanId);
+}
+@Styles.Render("~/content/pricing-styles")
+
+<style>
+    #registrationForm {
+        margin-top:32px;
+        padding:16px 0px;
+    }
+	.card-icon{
+		max-height:25px;
+		margin-right:12px;
+	}
+    .dropdown-menu form input {
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+        height: 26px;
+        text-align:left;
+    }
+    .dropdown-menu form .btn-link:hover {
+        text-decoration: none;
+        background-color: #e8e8e8;
+    }
+    .product .panel-heading {
+        text-align:center;
+    }
+    .select-a-different-plan {
+        margin-bottom:16px;
+    }
+
+</style>
+
+    <div class="col-md-5 col-sm-5 product">
+        <h2>Plan Details</h2>
+
+        <div id="pricing">
+            <div class="panel panel-primary @plan.Id">
+                <div class="panel-heading">@plan.MarketingTitle</div>
+                <div class="panel-body">
+                    <ul>@Html.Raw(plan.MarketingDetails)</ul>
+                    <div class="cost dollar">@plan.Cost<span class="per-month">Per Month</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="btn-group dropup select-a-different-plan">
+            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Select a different plan <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                @foreach (var p in RingClone.Portal.Helpers.SubscriptionHelper.SubscriptionPlans)
+                {
+                    if (p.Id != Model.NewPlanId && p.Id != Model.ExistingPlanId)
+                    {
+                        <li><form action="@Url.Action("ChangePlanConfirm", "Account")" method="post"><input type="submit" value="@p.MarketingTitle" class="form-control btn btn-link" style="" /><input type="hidden" name="PlanId" value="@p.Id" /></form></li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+    <div class="col-md-7 col-sm-7 payment">
+        @*<div class="alert alert-dismissable alert-info animated fadeIn slideInDown"><strong>Please note:</strong> You are signing up for the trial program. You have 30 days to try out RingClone absolutely free. You may cancel at any time, and will not be charged. We do require that you enter your card details now, so that there will be no interruption in service if you choose to continue using RingClone.</div>*@
+        <h2>Billing Info</h2>
+        <br />
+        <span class="lead" style="color:#ffaaaa;">First month free!</span>
+        <p class="small"><em>Cancel anytime during the trial period, and you will not be charged.</em></p>
+        <p>Your cost today: <span style="text-decoration:line-through;color:#ffaaaa;"><strong>$@plan.Cost.ToString("0.00")</strong></span> <strong>$0</strong> (First month free)</p>
+
+        <div id="registrationForm">
+            <script src='https://js.stripe.com/v2/' type='text/javascript'></script>
+            <form accept-charset="UTF-8" action="@Url.Action("ChangePlanBilling", "Account")" class="require-validation" data-cc-on-file="false" data-stripe-publishable-key="pk_live_LRrkOORDEWgLh4YMw2Dq1SUa" id="payment-form" method="post">
+                <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓" /><input name="_method" type="hidden" value="PUT" /><input name="authenticity_token" type="hidden" value="qLZ9cScer7ZxqulsUWazw4x3cSEzv899SP/7ThPCOV8=" /></div>
+                <input type="hidden" name="PlanId" value="@plan.Id" /><div class='col-sm-12 form-group required'>
+                    <div class='col-sm-12 form-group required'>
+                        <label class='control-label'>Billing Email</label>
+                        <input class='form-control' size='4' type='email' name="BillingEmail" value="@Model.BillingEmail">
+                    </div>
+                    <div class="col-sm-4">
+                        <h4><strong>Card Details</strong></h4>
+                    </div>
+                    <div class='col-sm-8 form-group icons'>
+                        <img src="~/Images/visa.png" class="card-icon" />
+                        <img src="~/Images/mastercard.png" class="card-icon" />
+                        <img src="~/Images/discover.png" class="card-icon" />
+                        <img src="~/Images/american-express.png" class="card-icon" />
+                    </div>
+                    <div class='col-sm-12 form-group required'>
+                        <label class='control-label'>Name on Card:</label>
+                        <input class='form-control' type='text' maxlength="200" placeholder="ex. John Smith">
+                    </div>
+                    <div class='col-sm-12 form-group card required'>
+                        <label class='control-label'>Card Number</label>
+                        <input autocomplete='off' class='form-control card-number' type='text' maxlength="20">
+                    </div>
+                    <div class='col-sm-4 form-group cvc required'>
+                        <label class='control-label'>CVC</label>
+                        <input autocomplete='off' class='form-control card-cvc' placeholder='ex. 311' maxlength="4" type='text'>
+                    </div>
+                    <div class='col-sm-4 form-group expiration required'>
+                        <label class='control-label'>Expiration</label>
+                        <input class='form-control card-expiry-month' placeholder='MM' type='text' maxlength="2">
+                    </div>
+                    <div class='col-sm-4 form-group expiration required'>
+                        <label class='control-label'> </label>
+                        <input class='form-control card-expiry-year' placeholder='YYYY' size='4' type='text' maxlength="4">
+                    </div>
+                </div>
+                <div class='col-md-12 form-group'>
+                    @Html.BootstrapValidationMessage("")
+                    <div class="buttons">
+                        <div class="text-center">
+                            <button class="btn btn-lg btn-primary submit-button" type="submit">Submit</button>
+                        </div>
+                    </div>
+                </div>
+                <div class='col-md-12 error form-group hide'>
+                    <div class='alert-danger alert'>
+                        Please correct the errors and try again.
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </form>
+        </div>
+    </div>
+
+@section scripts {
+	@*<script type="text/javascript" src="https://js.stripe.com/v2/"></script>*@
+	<script type="text/javascript">
+		$(function () {
+			$('#payment-form').bind('submit', function (e) {
+				var $form = $(e.target).closest('form'),
+					inputSelector = ['input[type=email]', 'input[type=password]',
+									 'input[type=text]', 'input[type=file]',
+									 'textarea'].join(', '),
+					$inputs = $form.find('.required').find(inputSelector),
+					$errorMessage = $form.find('div.error'),
+					valid = true;
+
+				$errorMessage.addClass('hide');
+				$('.has-error').removeClass('has-error');
+				$inputs.each(function (i, el) {
+					var $input = $(el);
+					if ($input.val() === '') {
+						$input.parent().addClass('has-error');
+						$errorMessage.removeClass('hide');
+						e.preventDefault(); // cancel on first error
+					}
+				});
+			});
+		});
+
+		$(function () {
+			var $form = $("#payment-form");
+
+			$form.on('submit', function (e) {
+				if (!$form.data('cc-on-file')) {
+					e.preventDefault();
+					Stripe.setPublishableKey($form.data('stripe-publishable-key'));
+					Stripe.createToken({
+						number: $('.card-number').val(),
+						cvc: $('.card-cvc').val(),
+						exp_month: $('.card-expiry-month').val(),
+						exp_year: $('.card-expiry-year').val()
+					}, stripeResponseHandler);
+				}
+			});
+
+			function stripeResponseHandler(status, response) {
+				if (response.error) {
+					$('.error')
+					  .removeClass('hide')
+					  .find('.alert')
+					  .text(response.error.message);
+				} else {
+					// token contains id, last4, and card type
+					var token = response['id'];
+					// insert the token into the form so it gets submitted to the server
+					$form.find('input[type=text]').empty();
+					$form.append("<input type='hidden' name='StripeToken' value='" + token + "'/>");
+					$form.get(0).submit();
+				}
+			}
+		})
+	</script>
+}

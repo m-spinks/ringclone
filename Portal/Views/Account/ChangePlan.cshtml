@@ -1,0 +1,68 @@
+﻿@model RingClone.Portal.Models.ChangePlanModel
+@Styles.Render("~/content/pricing-styles")
+
+<style>
+	#changePlanForm {
+		text-align:center;
+	}
+	#changePlanForm .row {
+		margin-bottom:16px;
+	}
+	.plan.selected {
+		border:solid 1px #000;
+	}
+	.plan.selected div {
+		background-color:#fff;
+		border:solid 1px #000;
+		border-radius:3px;
+		text-align:center;
+		padding: 6px 12px;
+		margin-bottom:16px;
+	}
+</style>
+
+    <div id="changePlanForm">
+        <h2>Choose Plan</h2>
+        @Html.BootstrapValidationMessage("")
+        <div class="row subscription-plans" id="pricing">
+            @foreach (var plan in RingClone.Portal.Helpers.SubscriptionHelper.SubscriptionPlans)
+            {
+                <div class="col-sm-6 col-lg-3">
+                    <div class="panel panel-primary @plan.Id @if (Model.ExistingPlanId == plan.Id) {<text>selected</text>}">
+                        <div class="panel-heading">@plan.MarketingTitle</div>
+                        <div class="panel-body">
+                            @Html.Raw(plan.MarketingDetails)
+                            <div class="cost dollar">@plan.Cost<span class="per-month">Per Month</span></div>
+                            @if (Model.ExistingPlanId == plan.Id)
+                            {
+                                <div>You are currently subscribed to this plan</div>
+                            }
+                            else
+                            {
+                                <form action="/Account/ChangePlanConfirm" method="POST">
+                                    <input type="submit" value="Select the @plan.MarketingTitle" class="btn btn-primary btn-block" style="white-space:normal;" />
+                                    <input type="hidden" name="PlanId" value="@plan.Id" />
+                                </form>
+                            }
+
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+		<a href="@Url.Action("Cancel","Account")" class="btn btn-default" style="white-space:normal;">Cancel my subscription</a>
+    </div>
+
+
+@section scripts {
+	<script>
+		$(document).ready(function () {
+			$('.plan input[type="submit"]').on('mouseover', function () {
+				$(this).closest('.plan').addClass('hover');
+			}).on('mouseout', function () {
+				$(this).closest('.plan').removeClass('hover');
+			})
+		});
+
+	</script>	
+}

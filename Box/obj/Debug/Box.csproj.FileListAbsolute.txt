@@ -1,0 +1,14 @@
+D:\APD\RingClone\Box\bin\Debug\Box.dll
+D:\APD\RingClone\Box\bin\Debug\Box.pdb
+D:\APD\RingClone\Box\bin\Debug\FluentNHibernate.dll
+D:\APD\RingClone\Box\bin\Debug\Iesi.Collections.dll
+D:\APD\RingClone\Box\bin\Debug\NHibernate.dll
+D:\APD\RingClone\Box\bin\Debug\RingClone.AppConfig.dll
+D:\APD\RingClone\Box\bin\Debug\RingClone.AppConfig.pdb
+D:\APD\RingClone\Box\bin\Debug\FluentNHibernate.pdb
+D:\APD\RingClone\Box\bin\Debug\FluentNHibernate.xml
+D:\APD\RingClone\Box\bin\Debug\Iesi.Collections.xml
+D:\APD\RingClone\Box\bin\Debug\NHibernate.xml
+D:\APD\RingClone\Box\obj\Debug\Box.csprojResolveAssemblyReference.cache
+D:\APD\RingClone\Box\obj\Debug\Box.dll
+D:\APD\RingClone\Box\obj\Debug\Box.pdb

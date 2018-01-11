@@ -1,0 +1,203 @@
+﻿@model RingClone.Portal.Models.AdHocTransferModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Choose a Google Folder</h2>
+<p class="small">Select a folder in your google account to store your RingCentral files in</p>
+
+<div class="row">
+	<div class="col-md-2"></div>
+	<div class="col-md-8 explorer">
+		<div id="googleBreadcrumbs"><ul class="breadcrumb"></ul></div>
+        <div id="googleUseThisFolder" class="use-this-folder"></div>
+        <div id="googleExplorer" class="btn-group-vertical btn-block"></div>
+	</div>
+	<div class="col-md-2"></div>
+</div>
+
+@section style {
+<style>
+	p.small {
+		margin-bottom:0px;
+	}
+	.explorer {
+		min-height:150px;
+		padding-top:12px;
+        margin-top:8px;
+	}
+    #googleUseThisFolder {
+        text-align:center;
+		margin-bottom:24px;
+    }
+    #googleUseThisFolder .btn {
+        padding:24px;
+    }
+	.google-folder img {
+		text-align:left;
+		vertical-align:middle;
+		margin-right:8px;
+	}
+    .google-file img {
+		text-align:left;
+		vertical-align:middle;
+		margin-right:8px;
+    }
+	.input-group.google-folder .folder-name,
+	.input-group.google-file .file-name {
+		border: solid 1px #cccccc;
+		min-height: 46px;
+		padding:6px 14px 4px 14px;
+		width:100%;
+		text-align:left;
+		background-color:#fff;
+		cursor:default;
+	}
+	.input-group.google-folder .folder-name:hover {
+		background-color:#f0f0f0;
+	}
+	.input-group.google-folder:not(:first-child) .folder-name,
+	.input-group.google-file:not(:first-child) .file-name {
+		border-top: none;
+	}
+	.input-group.google-folder:not(:first-child) .input-group-btn .btn,
+	.input-group.google-file:not(:first-child) .input-group-btn .btn {
+		border-top: none;
+	}
+	.input-group.google-folder .input-group-btn .btn,
+	.input-group.google-file .input-group-btn .btn {
+		border-top-right-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+	.input-group.google-file .file-name {
+        border-color:#e8e8e8;
+	}
+	.input-group.google-file,
+	.input-group.google-file .file-name {
+        font-weight:bold;
+        color: #22aaff;
+        width:100%;
+    }
+
+	.breadcrumb {
+		margin-top:0px;
+		margin-bottom:0px;
+		min-height:36px;
+	}
+	div#googleBreadcrumbs {
+		margin-bottom:24px;
+	}
+</style>
+}
+
+@section scripts {
+<script>
+    var breadcrumbs = [];
+	$(document).ready(function () {
+		loadFolder("", "My Drive");
+	});
+	function loadFolder(id, name) {
+		$('.explorer').mask("Loading...");
+		$.ajax({
+			url: "/api/googleexplorer/folder?googleaccountid=@Model.GoogleAccountId&folderid=" + id + "&folderName=" + name,
+			complete: function() {
+				$('.explorer').unmask();
+			},
+			success: function (result) {
+			    //BUILD FOLDER AND FILE LIST
+			    $('#googleExplorer').html('');
+			    if (result) {
+                    //SYNC UP THE ID
+			        if (id != result.FolderId)
+			            id = result.FolderId;
+				    //BUILD FOLDER PATH AND BREADCRUMBS
+				    $('#googleBreadcrumbs ul').html('');
+				    var breadcrumbItems = "";
+				    var folderPath = "";
+				    var found = false;
+				    var i = 0;
+				    var totalBreadcrumbs = breadcrumbs.length;
+				    while (i < totalBreadcrumbs && !found) {
+				        var f = breadcrumbs[i];
+				        if (f.FolderId == id) {
+				            found = true;
+				        }
+				        i++;
+				    }
+				    while (i < totalBreadcrumbs) {
+				        breadcrumbs.pop();
+				        i++;
+				    }
+				    if (!found) {
+				        breadcrumbs.push({ FolderId: id, FolderName: name });
+				    }
+				    if (breadcrumbs.length > 0) {
+				        var folderId = "";
+				        var folderName = "";
+				        var count = 0;
+				        for (var i in breadcrumbs) {
+				            var f = breadcrumbs[i];
+				            folderId = f.FolderId;
+				            folderName = f.FolderName;
+				            breadcrumbItems += '<li><a href="#" onclick="clickBreadcrumb(\'' + folderId + '\', \'' + f.FolderName + '\')">' + folderName + '</a></li>';
+                            //SKIP THE LAST ONE (STORED IN FOLDERNAME)
+				            if (i < breadcrumbs.length - 1) {
+				                if (count > 0) {
+				                    folderPath += '\\';
+				                }
+				                folderPath += folderName;
+				            }
+				            count++;
+				        }
+				        $('#googleBreadcrumbs').html('<ul class="breadcrumb">' + breadcrumbItems + '</ul>');
+				    }
+                    //THIS FOLDER
+				    var paramsForThisFolder = [
+                        { name: "FolderId", value: f.FolderId },
+                        { name: "FolderName", value: f.FolderName },
+                        { name: "FolderPath", value: folderPath }
+				    ];
+				    var queryStringForThisFolder = $.param(paramsForThisFolder);
+				    $('#googleUseThisFolder').html('<a class="btn btn-primary btn-lg" type="button" href="ChooseGoogleFolderClick?' + queryStringForThisFolder + '">Use this folder (<strong>' + folderName + '</strong>)</a>');
+				    //BUILD CHILD FOLDERS
+				    if (result.ChildFolders) {
+					    for (var i in result.ChildFolders) {
+					        var f = result.ChildFolders[i];
+					    	var params = [
+                                { name: "FolderId", value: f.FolderId },
+					            { name: "FolderName", value: f.FolderName },
+					            { name: "FolderPath", value: folderPath + '\\' + folderName }
+					        ]
+					        var queryString = $.param(params);
+							$('#googleExplorer').append(
+'<div class="input-group input-group-lg google-folder">' +
+'	<button class="folder-name" onclick="clickFolder(\'' + f.FolderId + '\', \'' + f.FolderName + '\')"><img src="/images/folder.svg" />' + f.FolderName + '</button>' +
+'	<span class="input-group-btn">' +
+'		<a class="btn btn-default" type="button" href="ChooseGoogleFolderClick?' + queryString + '">Use this folder</a>' +
+'	</span>' + 
+'</div>'
+							);
+						}
+					}
+					if (result.ChildFiles) {
+						for (var i in result.ChildFiles) {
+							var f = result.ChildFiles[i];
+							$('#googleExplorer').append(
+'<div class="input-group input-group-lg google-file">' +
+'	<div class="file-name"><img src="/images/file.svg" />' + f.FileName + '</div>' +
+'</div>'
+							);
+							//$('#googleExplorer').append('<div class="google-file"><img src="/images/file.svg" /></div>' + f.FileName + '</div>');
+						}
+					}
+				}
+			}
+		});
+	}
+	function clickFolder(id, name) {
+		loadFolder(id, name);
+	}
+	function clickFile(id) {
+	}
+	function clickBreadcrumb(id, name) {
+		loadFolder(id, name);
+	}
+</script>}

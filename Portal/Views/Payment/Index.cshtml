@@ -1,0 +1,50 @@
+﻿@{
+	ViewBag.Title = "Index";
+	var planService = new Stripe.StripePlanService();
+	IEnumerable<Stripe.StripePlan> response = planService.List(); // optional StripeListOptions
+	foreach (var plan in response)
+	{
+		<div>@plan.Name - @plan.Amount</div>
+	}
+}
+
+<style>
+
+</style>
+
+
+<h2>Index</h2>
+
+@Html.BootstrapValidationMessage("")
+
+<div class="row subscription-plans">
+    @foreach (var plan in RingClone.Portal.Helpers.SubscriptionHelper.SubscriptionPlans)
+    {
+        <div class="col-md-3 @plan.Id">
+            <h2>@plan.MarketingTitle</h2>
+            @Html.Raw(plan.MarketingDetails)
+            <form action="/Payment/CreateSubscription/@plan.Id" method="POST">
+                <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+                        data-key="pk_test_DtQslw5VSvQHLq2f5Kw9ApJu"
+                        data-image="images/marketplace.png"
+                        data-name="RingClone"
+                        data-description="@plan.MarketingLabel"
+                        data-amount="@plan.Cost.ToString("00.00").Replace(".","")"
+                        data-label="Sign Up">
+                </script>
+            </form>
+        </div>
+    }
+</div>
+
+
+<form action="/Payment/CreateSubscription/ringclone_bronze" method="POST">
+    <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
+            data-key="pk_test_DtQslw5VSvQHLq2f5Kw9ApJu"
+            data-image="images/marketplace.png"
+            data-name="Emma's Farm CSA"
+            data-description="Subscription for 1 weekly box"
+            data-amount="2000"
+            data-label="Sign Me Up!">
+    </script>
+</form>

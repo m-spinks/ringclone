@@ -1,0 +1,10 @@
+﻿@model RingClone.Portal.Models.SimpleAutomationModel
+
+@Html.BootstrapValidationMessage("")
+<h2 class="">Ok, Here We Go..</h2>
+<p class="small">You will need to give Google Drive permission to accept files from RingClone.</p>
+<p class="small">Click below, and we will direct you to the Google authorization page. After you click "Allow", we will then redirect you back here to continue setting up your transfer.</p>
+<div class="btn-group-vertical" role="group" aria-label="...">
+	<a href="@Model.GoogleUrl" class="btn btn-default">Go To Google</a>
+</div>
+

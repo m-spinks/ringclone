@@ -1,0 +1,23 @@
+﻿{
+  "$schema": "http://schemastore.org/schemas/json/webjobs-list.json",
+  "WebJobs": [
+    {
+      "filePath": "../TicketProcessor/TicketProcessor.csproj"
+    },
+    {
+      "filePath": "../TicketGenerator/TicketGenerator.csproj"
+    },
+    {
+      "filePath": "../TicketDistributor/TicketDistributor.csproj"
+    },
+    {
+      "filePath": "../ArchiveIndexer/ArchiveIndexer.csproj"
+    },
+    {
+      "filePath": "../ConfigMonitor/ConfigMonitor.csproj"
+    },
+    {
+      "filePath": "../DownloadProcessor/DownloadProcessor.csproj"
+    }
+  ]
+}

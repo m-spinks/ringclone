@@ -1,0 +1,118 @@
+{
+  "id": "Cillpfl6Ui3szUA",
+  "uri": "https://platform.ringcentral.com/restapi/v1.0/account/191625028/call-log/Cillpfl6Ui3szUA?view=Detailed",
+  "sessionId": "122847503028",
+  "type": "Voice",
+  "direction": "Outbound",
+  "action": "RingOut Web",
+  "result": "Call connected",
+  "startTime": "2017-12-08T22:06:48.700Z",
+  "duration": 247,
+  "lastModifiedTime": "2017-12-08T22:11:22.243Z",
+  "transport": "PSTN",
+  "from": {
+    "phoneNumber": "+19188765058",
+    "extensionNumber": null,
+    "location": null,
+    "name": "Matt Spinks",
+    "device": null
+  },
+  "to": {
+    "phoneNumber": "+18006018655",
+    "extensionNumber": null,
+    "location": null,
+    "name": null,
+    "device": null
+  },
+  "recording": {
+    "id": "918725518028",
+    "uri": "https://platform.ringcentral.com/restapi/v1.0/account/191625028/recording/918725518028",
+    "type": "Automatic",
+    "contentUri": "https://media.ringcentral.com/restapi/v1.0/account/191625028/recording/918725518028/content"
+  },
+  "message": null,
+  "billing": {
+    "costIncluded": "0.000",
+    "costPurchased": "0.000"
+  },
+  "legs": [
+    {
+      "id": null,
+      "uri": null,
+      "sessionId": null,
+      "type": "Voice",
+      "direction": "Outbound",
+      "action": "RingOut Web",
+      "result": "Accepted",
+      "startTime": "2017-12-08T22:06:34.598Z",
+      "duration": 262,
+      "lastModifiedTime": null,
+      "transport": "PSTN",
+      "legType": "RingOutWebToSubscriber",
+      "extension": {
+        "id": "191625028",
+        "uri": "https://platform.ringcentral.com/restapi/v1.0/account/191625028/extension/191625028"
+      },
+      "from": {
+        "phoneNumber": "+18006018655",
+        "extensionNumber": null,
+        "location": null,
+        "name": "Matt Spinks",
+        "device": null
+      },
+      "to": {
+        "phoneNumber": "+19188502522",
+        "extensionNumber": null,
+        "location": "Tulsa, OK",
+        "name": null,
+        "device": null
+      },
+      "recording": {
+        "id": "918725518028",
+        "uri": "https://platform.ringcentral.com/restapi/v1.0/account/191625028/recording/918725518028",
+        "type": "Automatic",
+        "contentUri": "https://media.ringcentral.com/restapi/v1.0/account/191625028/recording/918725518028/content"
+      },
+      "message": null,
+      "billing": {
+        "costIncluded": "0.000",
+        "costPurchased": "0.000"
+      }
+    },
+    {
+      "id": null,
+      "uri": null,
+      "sessionId": null,
+      "type": "Voice",
+      "direction": "Outbound",
+      "action": "RingOut Web",
+      "result": "Call connected",
+      "startTime": "2017-12-08T22:06:48.700Z",
+      "duration": 247,
+      "lastModifiedTime": null,
+      "transport": "PSTN",
+      "legType": "RingOutWebToCaller",
+      "extension": {
+        "id": "191625028",
+        "uri": "https://platform.ringcentral.com/restapi/v1.0/account/191625028/extension/191625028"
+      },
+      "from": {
+        "phoneNumber": "+19188765058",
+        "extensionNumber": null,
+        "location": null,
+        "name": "Matt Spinks",
+        "device": null
+      },
+      "to": {
+        "phoneNumber": "+18006018655",
+        "extensionNumber": null,
+        "location": null,
+        "name": null,
+        "device": null
+      },
+      "recording": null,
+      "message": null,
+      "billing": null
+    }
+  ]
+}

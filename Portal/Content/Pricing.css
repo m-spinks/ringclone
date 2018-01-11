@@ -1,0 +1,81 @@
+﻿#pricing .panel {
+    border-top-left-radius:4px;
+    border-top-right-radius:4px;
+}
+@media (min-width:1200px) {
+    #pricing ul {
+        min-height:380px;
+    }
+}
+@media (min-width:768px) and (max-width:1199px) {
+    #pricing ul {
+        min-height:240px;
+    }
+}
+#pricing ul li {
+	text-align: left;
+	padding-top:4px;
+	padding-bottom:4px;
+}
+#pricing .panel-heading {
+    font-size:1.35em;
+    padding:24px 8px;
+    text-align:center;
+}
+#pricing .bronze .panel-heading {
+    background-color:#630;
+    border-color:#520;
+}
+#pricing .panel.bronze,
+#pricing .panel.ringclone_bronze  {
+    border-color:#520;
+}
+#pricing .silver .panel-heading,
+#pricing .ringclone_silver .panel-heading {
+    background-color:#666;
+    border-color:#444;
+}
+#pricing .panel.silver,
+#pricing .panel.ringclone_silver  {
+    border-color:#444;
+}
+#pricing .gold .panel-heading,
+#pricing .ringclone_gold .panel-heading {
+    background-color:#980;
+    border-color:#760;
+}
+#pricing .panel.gold,
+#pricing .panel.ringclone_gold  {
+    border-color:#760;
+}
+#pricing .platinum .panel-heading,
+#pricing .ringclone_platinum .panel-heading {
+    background-color:#889;
+    border-color:#667;
+}
+#pricing .panel.platinum, #pricing .panel.ringclone_platinum {
+    border-color:#667;
+}
+#pricing .cost {
+    background-color:#f0f0f0;
+    color: #666;
+    font-size:64px;
+    text-align:center;
+    margin-left:-15px;
+    margin-right:-15px;
+}
+#pricing .signup {
+    background-color:#f0f0f0;
+    margin-left:-15px;
+    margin-right:-15px;
+    margin-bottom:-15px;
+    padding-bottom:15px;
+}
+#pricing .per-month {
+    font-size:10px;
+}
+#pricing .cost.dollar:before {
+    content:'$';
+    font-size:18px;
+    vertical-align:super;
+}
